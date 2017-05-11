@@ -7,7 +7,7 @@ def normalize_passage(text_str):
 
     """ Remove some unnecessary characters from the data using regular python regex module."""
 
-    text_str = re.sub(r"(    )|(\n)|(\\displaystyle)|(\\)|(Edit ==)|(Edit ===)|(==)|(===)", "", text_str)
+    text_str = re.sub(r"(    )|(\n)|(\\displaystyle)|(\\)|(Edit ===)|(Edit ==)|(===)|(==)", "", text_str)
 
     return text_str
 
@@ -45,7 +45,7 @@ def write_to_json(data):
 
     """ Convert list of dictionary into a json file and save it into data/wiki_text.json file. """
 
-    with open('./../data/wiki_text.json', 'w', encoding='utf8') as outfile:
+    with open('../data/wiki_data.json', 'w', encoding='utf8') as outfile:
         data_dump = json.dumps(data, indent=4, separators=(',', ': '))
         outfile.write(data_dump)
 
