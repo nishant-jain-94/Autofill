@@ -58,5 +58,7 @@ topics = ['Super Bowl 50', 'Warsaw', 'Normans', 'Nicola Tesla', 'Computational c
     'Chloroplast', 'Prime number', 'Rhine' , 'Scottish Parliament', 'Islamism', 'Imperialism', 'United Methodist Church', 'French and Indian War',
     'Force']
 
-wiki_data = read_from_wiki(topics)
-write_to_json(wiki_data)
+def load_data():
+    """Loads data from Wikipedia"""
+    wiki_data = read_from_wiki(topics)
+    write_to_json(wiki_data)
