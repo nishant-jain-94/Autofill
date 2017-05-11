@@ -1,7 +1,10 @@
 appdirs==1.4.3
+beautifulsoup4==4.6.0
 bleach==2.0.0
 boto==2.46.1
+bs4==0.0.1
 bz2file==0.98
+click==6.7
 decorator==4.0.11
 entrypoints==0.2.2
 gensim==2.0.0
@@ -32,6 +35,7 @@ pickleshare==0.7.4
 prompt-toolkit==1.0.14
 protobuf==3.3.0
 ptyprocess==0.5.1
+pur==4.0.2
 Pygments==2.2.0
 pyparsing==2.2.0
 python-dateutil==2.6.0
@@ -53,3 +57,4 @@ wcwidth==0.1.7
 webencodings==0.5.1
 Werkzeug==0.12.1
 widgetsnbextension==2.0.0
+wikipedia==1.4.0
