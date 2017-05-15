@@ -60,7 +60,7 @@ model.summary()
 
 # In[ ]:
 
-model_weights_path = "../weights/LSTM_1_Layer"
+model_weights_path = "../weights/POS_LSTM_2_Layer"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.hdf5'
