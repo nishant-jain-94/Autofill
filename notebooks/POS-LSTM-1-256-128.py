@@ -70,7 +70,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 # In[ ]:
 
 #start_date = datetime.datetime.now()
-model.fit(x_data, y_data, epochs=10, batch_size=32, verbose=1, validation_split=0.2, callbacks=[checkpoint])
+model.fit(x_data, y_data, epochs=10, batch_size=128, verbose=1, validation_split=0.2, callbacks=[checkpoint])
 #end_date = datetime.datetime.now()
 #print("TOTAL TIME ELAPSED IN POS_MODEL_TEMPLATE.PYNB")
 #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
