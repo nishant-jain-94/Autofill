@@ -110,7 +110,7 @@ class Embeddings:
                 os.path.isfile(self.path_indexed_sentences) or
                 os.path.isfile(self.path_indexed_vocabulary) or
                 os.path.isfile(self.path_pos_indexed_vocabulary) or
-                os.path.isfile(self.path_pos_categorical_indexed_vocabulary)):
+                os.path.isfile(self.path_pos_categorical_indexed_sentences)):
             dataset = get_squad_wiki_data()
             raw_text = ""
             passage_text = "" 
