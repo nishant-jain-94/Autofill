@@ -94,6 +94,7 @@ class Embeddings:
             passage_text = "".join(passage_text_list)
             question_text = ".".join(question_text_list)
             raw_text = passage_text + " " + question_text
+            raw_text = raw_text.lower()
             self.preprocessor(raw_text, self.size, self.window, self.min_count, self.workers)        
 
     # Will load and return weights from the existing embedding.npz file
