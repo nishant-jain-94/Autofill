@@ -10,7 +10,7 @@ import h5py
 import datetime
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, GRU
+from keras.layers import Dense, Dropout, LSTM
 from keras.callbacks import ModelCheckpoint
 from embeddings import Embeddings
 
@@ -21,7 +21,7 @@ embeddings = Embeddings(100, 4, 1, 4)
 tokenized_pos_sentences = embeddings.get_pos_categorical_indexed_sentences()
 pos2index, index2pos = embeddings.get_pos_vocabulary()
 no_of_unique_tags = len(pos2index)
-window_size = 2
+window_size = 3
 
 
 # In[ ]:
@@ -52,18 +52,18 @@ y_data = seq_out
 
 # Changes to the model to be done here
 model = Sequential()
-model.add(GRU(512, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
+model.add(LSTM(256, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
 model.add(Dropout(0.2))
-model.add(GRU(512))
+model.add(LSTM(256))
 model.add(Dropout(0.2))
-model.add(Dense(no_of_unique_tags, activation='softmax'))
+model.add(Dense(no_of_unique_tags, activation='sigmoid'))
 model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
 # In[ ]:
 
-model_weights_path = "../weights/POS_GRU_2_Layer"
+model_weights_path = "../weights/POS-LSTM-2-256-256-64-10-0_2"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.hdf5'

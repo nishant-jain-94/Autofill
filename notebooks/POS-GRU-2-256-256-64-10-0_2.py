@@ -10,7 +10,7 @@ import h5py
 import datetime
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM
+from keras.layers import Dense, Dropout, GRU
 from keras.callbacks import ModelCheckpoint
 from embeddings import Embeddings
 
@@ -44,7 +44,7 @@ print ("Number of samples : ", n_samples)
 
 # In[ ]:
 
-x_data = seq_in#np.reshape(seq_in, (n_samples, window_size, 1))
+x_data = seq_in
 y_data = seq_out
 
 
@@ -52,15 +52,18 @@ y_data = seq_out
 
 # Changes to the model to be done here
 model = Sequential()
-model.add(LSTM(256, input_shape=(x_data.shape[1], x_data.shape[2])))
-model.add(Dense(no_of_unique_tags, activation='softmax'))
+model.add(GRU(256, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
+model.add(Dropout(0.2))
+model.add(GRU(256))
+model.add(Dropout(0.2))
+model.add(Dense(no_of_unique_tags, activation='relu'))
 model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
 # In[ ]:
 
-model_weights_path = "../weights/POS_LSTM_2_Layer"
+model_weights_path = "../weights/POS-GRU-2-256-256-64-10-0_2"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.hdf5'
@@ -69,11 +72,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # In[ ]:
 
-#start_date = datetime.datetime.now()
-model.fit(x_data, y_data, epochs=10, batch_size=128, verbose=1, validation_split=0.2, callbacks=[checkpoint])
-#end_date = datetime.datetime.now()
-#print("TOTAL TIME ELAPSED IN POS_MODEL_TEMPLATE.PYNB")
-#print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
+model.fit(x_data, y_data, epochs=10, batch_size=64, verbose=1, validation_split=0.2, callbacks=[checkpoint])
 
 
 # In[ ]:

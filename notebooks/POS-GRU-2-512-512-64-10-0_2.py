@@ -52,20 +52,21 @@ y_data = seq_out
 
 # Changes to the model to be done here
 model = Sequential()
-model.add(GRU(128, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
+model.add(GRU(512, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
 model.add(Dropout(0.2))
-model.add(GRU(128))
-model.add(Dense(no_of_unique_tags, activation='relu'))
+model.add(GRU(512))
+model.add(Dropout(0.2))
+model.add(Dense(no_of_unique_tags, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
 # In[ ]:
 
-model_weights_path = "../weights/POS_GRU_2_Layer"
+model_weights_path = "../weights/POS-GRU-2-512-512-64-10-0_2"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
-checkpoint_path = model_weights_path + '/pos_relu_weights.{epoch:02d}-{val_acc:.2f}.hdf5'
+checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.hdf5'
 checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
 
 
