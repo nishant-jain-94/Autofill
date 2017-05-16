@@ -145,7 +145,7 @@ model.summary()
 # In[33]:
 
 print("Train")
-for epoch in range(1):
+for epoch in range(15):
     print("Epoch {0}/{1}".format(epoch+1, 15))
     mean_tr_accuracy = []
     mean_tr_loss = []
