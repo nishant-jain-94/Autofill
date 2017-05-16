@@ -67,7 +67,7 @@ print(vocab_size)
 
 # In[ ]:
 
-model_weights_path = "../weights/LSTM-2-512-Window-5-Batch-1-Epoch-10-Stateful"
+model_weights_path = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 
