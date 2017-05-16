@@ -157,8 +157,8 @@ for epoch in range(15):
         model.reset_states()
     mean_accuracy = np.mean(mean_tr_accuracy)
     mean_loss = np.mean(mean_tr_loss)
-    print("Mean Accuracy", mean_tr_accuracy)
-    print("Mean Loss", mean_tr_loss)
+    print("Mean Accuracy", mean_accuracy)
+    print("Mean Loss", mean_loss)
     filepath = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful/weights-{0}-{1}".format(epoch+1, mean_accuracy, mean_loss)
     model.save_weights(filepath)
 
