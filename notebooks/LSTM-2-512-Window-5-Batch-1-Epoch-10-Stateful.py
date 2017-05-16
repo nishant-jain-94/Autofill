@@ -125,7 +125,7 @@ for epoch in range(15):
     mean_tr_accuracy = []
     mean_tr_loss = []
     for i in range(len(seq_in)):
-        if i % 100:
+        if i % 100 == 0:
             print("Done with {0}/{1}".format(i, len(seq_in)))
         for j in range(len(seq_in[i])):
             train_accuracy, train_loss = model.train_on_batch(np.expand_dims(seq_in[i][j], axis=0), np.expand_dims(seq_out[i][j], axis=0))
@@ -184,6 +184,11 @@ def accuracy(no_of_preds):
 
 # n = no. of predictions
 print(accuracy(90000))
+
+
+# In[2]:
+
+
 
 
 # In[ ]:
