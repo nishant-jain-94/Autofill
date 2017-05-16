@@ -3,7 +3,7 @@
 
 # ### importing require packages
 
-# In[ ]:
+# In[1]:
 
 from __future__ import print_function
 
@@ -28,6 +28,11 @@ from keras.callbacks import ModelCheckpoint
 
 from nltk.tokenize import word_tokenize
 import random
+
+
+# In[2]:
+
+np.mean([1, 2, 3])
 
 
 # ## Instantiate Embeddings 
@@ -154,7 +159,7 @@ for epoch in range(15):
     mean_loss = np.mean(mean_tr_loss)
     print("Mean Accuracy", mean_tr_accuracy)
     print("Mean Loss", mean_tr_loss)
-    filepath = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful/weights-{0}-{1}".format(epoch+1, mean_tr_accuracy, mean_tr_loss)
+    filepath = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful/weights-{0}-{1}".format(epoch+1, mean_accuracy, mean_loss)
     model.save_weights(filepath)
 
 
