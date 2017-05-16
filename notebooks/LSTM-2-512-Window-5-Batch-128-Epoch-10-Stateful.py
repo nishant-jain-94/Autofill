@@ -3,7 +3,7 @@
 
 # ### importing require packages
 
-# In[1]:
+# In[19]:
 
 from __future__ import print_function
 
@@ -30,21 +30,21 @@ from nltk.tokenize import word_tokenize
 import random
 
 
-# In[2]:
+# In[20]:
 
 np.mean([1, 2, 3])
 
 
 # ## Instantiate Embeddings 
 
-# In[ ]:
+# In[21]:
 
 embeddings = Embeddings(100, 4, 1, 4)
 
 
 # ### getting data from preprocessing
 
-# In[ ]:
+# In[22]:
 
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
@@ -54,7 +54,7 @@ tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 # ### generating training data
 
-# In[ ]:
+# In[23]:
 
 window_size = 5
 vocab_size = len(word2index)
@@ -65,14 +65,14 @@ print(vocab_size)
 
 # ## Defining model
 
-# In[ ]:
+# In[24]:
 
 model_weights_path = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 
 
-# In[ ]:
+# In[25]:
 
 seq_in = []
 seq_out = []
@@ -96,13 +96,13 @@ n_samples = len(seq_in)
 print ("Number of samples : ", n_samples)
 
 
-# In[ ]:
+# In[26]:
 
 subsamples = np.array([len(seq) for seq in seq_in])
 print(np.sum(subsamples))
 
 
-# In[ ]:
+# In[27]:
 
 subsamples_in = np.array([s for seq in seq_in for s in seq])
 subsamples_out = np.array([s for seq in seq_out for s in seq])
@@ -110,17 +110,17 @@ subsamples_out = np.array([s for seq in seq_out for s in seq])
 
 # ## Train Model
 
-# In[ ]:
+# In[28]:
 
 np.expand_dims(seq_in[0][0], axis=1)
 
 
-# In[ ]:
+# In[29]:
 
 total_batches = int(subsamples_in.shape[0] / 256)
 
 
-# In[ ]:
+# In[30]:
 
 batch_len = []
 for i in range(total_batches):
@@ -128,7 +128,7 @@ for i in range(total_batches):
 min_batch_len = min(batch_len)
 
 
-# In[ ]:
+# In[31]:
 
 # Changes to the model to be done here
 model = Sequential()
@@ -142,10 +142,10 @@ model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
-# In[ ]:
+# In[33]:
 
 print("Train")
-for epoch in range(15):
+for epoch in range(1):
     print("Epoch {0}/{1}".format(epoch+1, 15))
     mean_tr_accuracy = []
     mean_tr_loss = []
@@ -165,60 +165,43 @@ for epoch in range(15):
 
 # ### model predict
 
-# In[ ]:
+# In[73]:
 
-start = 97
-pattern = list(subsamples_in[start])
-print("\"",' '.join(index2word[index] for index in pattern))
-for i in range(10):
-    prediction = model.predict(np.array([pattern]))
-    pred_word = word2vec_model.similar_by_vector(prediction[0])[0][0]
-    sys.stdout.write(pred_word)
-    pattern.append(word2index[pred_word])
-    pattern = pattern[1:len(pattern)]
+start = 20
+samples = subsamples_in[start::total_batches][:min_batch_len]
+predictions = model.predict_on_batch(samples)
+for index, prediction in enumerate(predictions):
+    print(' '.join(index2word[index] for index in samples[index]))
+    pred_word = word2vec_model.similar_by_vector(prediction)[0][0]
+    sys.stdout.write("*"+pred_word+" \n")
 
 
 # ## Accuracy
 
-# In[ ]:
+# In[74]:
 
-def accuracy(no_of_preds):
-    correct=0
-    wrong=0
-    random.seed(1)
-    for i in random.sample(range(0, subsamples_in.shape[0]), no_of_preds):
-        start = i
-        sentence = list(seq_in[start])
-        prediction = model.predict(np.array([sentence]))
-        pred_word = word2vec_model.similar_by_vector(prediction[0])[0][0]
-        next_word_index = list(subsamples_out[start+1])
-        next_word = index2word[next_word_index[-1]]
-        sim = word2vec_model.similarity(pred_word,next_word)
+def accuracy():
+    start = 27
+    count = 0
+    correct = 0
+    predictions = model.predict_on_batch(subsamples_in[start::total_batches][:min_batch_len])
+    ytrue = subsamples_out[start::total_batches][:min_batch_len]
+    for index, prediction in enumerate(predictions):
+        pred_word = word2vec_model.similar_by_vector(prediction)[0][0]
+        true_word = word2vec_model.similar_by_vector(ytrue[index])[0][0]
+        sim = word2vec_model.similarity(pred_word, true_word)
         if (sim >= 0.85):
             correct +=1
-        else : wrong +=1
-    print('correct: '+str(correct)+(' wrong: ')+str(wrong))
-    accur = float(correct/(correct+wrong))
-    print('accuracy = ',float(accur))
+        count += 1
+    accur = float(correct/(count))
+    print('accuracy = ', float(accur))
     
 
 
-# In[ ]:
+# In[75]:
 
 # n = no. of predictions
-print(accuracy(9000))
-
-
-# In[ ]:
-
-batch_len = []
-for i in range(total_batches):
-    batch_len.append(len(subsamples_in[i::total_batches]))
-
-
-# In[ ]:
-
-max(np.array(batch_len))
+print(accuracy())
 
 
 # In[ ]:

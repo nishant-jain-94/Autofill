@@ -184,20 +184,20 @@ class Embeddings:
 
 # In[3]:
 
-start_date = datetime.datetime.now()
-print("EMBEDDING(300,4,1,4) STARTED .....")
-e = Embeddings(300, 4, 1, 4)
-print("EMBEDDING(300,4,1,4) COMPLETED .....")
-end_date = datetime.datetime.now()
-#print("TOTAL TIME ELAPSED IN EMBEDDINGS")
-#print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
+# start_date = datetime.datetime.now()
+# print("EMBEDDING(300,4,1,4) STARTED .....")
+# e = Embeddings(300, 4, 1, 4)
+# print("EMBEDDING(300,4,1,4) COMPLETED .....")
+# end_date = datetime.datetime.now()
+# #print("TOTAL TIME ELAPSED IN EMBEDDINGS")
+# #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
 
 
 # In[ ]:
 
-print("CALLING INTERSECT FUNCTION OF EMBEDDING .....")
-e.load_google_word2vec_model()
-print("WORD2VEC INTERSECTION DONE.....")
+# print("CALLING INTERSECT FUNCTION OF EMBEDDING .....")
+# e.load_google_word2vec_model()
+# print("WORD2VEC INTERSECTION DONE.....")
 
 
 # In[4]:
