@@ -17,7 +17,7 @@ def processing_squad_data(dataset):
         paragraphs = data['paragraphs']       
         for paragraph in paragraphs:
             para_ques_dict = {}
-            para_ques_dict['Passages'] = paragraph['context']
+            para_ques_dict['Passages'] = paragraph['context'].lower()
             ques_list = []
             for questions in paragraph['qas']:
                 ques_list.append(questions['question'])
@@ -38,6 +38,27 @@ def combine_squad_dev_train():
     dev_set.extend(train_set)
     with open('../data/squad_data.json', 'w') as outfile:
         json.dump(dev_set , outfile)    
+
+
+# In[1]:
+
+def combine_squad_data():
+    """Merges two files squad_data and wiki_data and generates an merged file squad_wiki_data.json  """
+    with open('../data/dev-v1.1.json') as data_file:
+        dataset = json.load(data_file)
+    dataset = processing_squad_data(dataset)
+    final_dict = {}
+    final_para = []
+    final_question = []
+    for data in dataset:
+        final_para.append(data['Passages'])
+        final_question.extend(data['Question'])
+    final_dict['Paragraph'] = ''.join(final_para)
+    final_dict['Question'] = final_question
+    final_data = []
+    final_data.append(final_dict)
+    with open('../data/combined_squad_data.json','w') as outfile:
+        json.dump(final_data , outfile)
 
 
 # In[4]:
@@ -98,23 +119,39 @@ def load_squad_wiki_data():
         merge_file()  
 
 
-# In[6]:
+# In[2]:
 
 def get_squad_wiki_data():
+    print("Loading Squad Data")
     load_squad_wiki_data()
     with open("../data/squad_wiki_data.json", "r") as dataset:
         squad_wiki_data = json.load(dataset)
     return squad_wiki_data
 
 
-# In[8]:
+# In[3]:
+
+def get_squad_data():
+    print("Combining Squad Data")
+    combine_squad_data()
+    with open("../data/combined_squad_data.json", "r") as dataset:
+        squad_data = json.load(dataset)
+    return squad_data
+
+
+# In[7]:
 
 # data = get_squad_wiki_data()
 
 
-# In[11]:
+# In[8]:
 
 # type(data[0]["Question"])
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:

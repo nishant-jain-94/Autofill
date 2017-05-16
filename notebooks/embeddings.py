@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 import re
 import os
@@ -12,12 +12,12 @@ import datetime
 import spacy
 from keras.utils import to_categorical
 from nltk.tokenize import word_tokenize,sent_tokenize
+from load_squad_wiki_data import get_squad_data, get_squad_wiki_data
 from gensim.models import Word2Vec
-from load_squad_wiki_data import get_squad_wiki_data
 nlp = spacy.load('en', parser=False, entity=False, matcher=False, add_vectors=False)
 
 
-# In[9]:
+# In[ ]:
 
 class Embeddings:
     def __init__(self, size, window, min_count, workers):
@@ -65,66 +65,61 @@ class Embeddings:
 
         
     def preprocessor(self, raw_text, size, window, min_count, workers):  
-        print("Creating tokenized sentences")
         tokenized_sentences = self.tokenize_sentence(raw_text)
-        print("Creating pos tokenized sentences")
         tokenized_pos_sentences = self.find_POS(tokenized_sentences)
-        print("POS Tokenization Complete")
         vocab = ['PUNCT','SYM','X','ADJ','VERB','CONJ','NUM','DET','ADV','PROPN','NOUN','PART','INTJ','CCONJ','SPACE','ADP','SCONJ','AUX', 'PRON']
         vocab = dict((word, index) for index, word in enumerate(vocab))
         with open(self.path_pos_indexed_vocabulary,'w') as outfile:
             json.dump(vocab, outfile)
-        print("Categorizing Sentence")
-        categorical_pos_sentences = [to_categorical([vocab[word] for word in sent], num_classes = len(vocab)).tolist() for sent in tokenized_pos_sentences] 
-        print("Saving the Categorical POS Sentences into file")
-        with open(self.path_pos_categorical_indexed_sentences,'w') as outfile:
-            json.dump(categorical_pos_sentences, outfile) 
-        print("Categorical File Created With Data")    
         # initialize word2vector model
         model = Word2Vec(sentences = tokenized_sentences, size = size, window = window, min_count = min_count, workers = workers)
         # finding out the vocabulary of raw_text with index     
         vocab = dict([(k, v.index) for k, v in model.wv.vocab.items()])
         # Storeing the vocab2index in a seperate file
-        print("Saving Vocabulary Sentences into file")
         with open(self.path_indexed_vocabulary,'w') as outfile:
-            json.dump(vocab,outfile)
-        # replacing each word of tokenized_sentences by coressponding vocabulary index
-        indexed_sentences = [[vocab[word] for word in sent] for sent in tokenized_sentences]
-        # storeing indexed_sentences(tokenized sentences) in indexed.json file
-        print("Saving Indexed Sentences into file")
-        with open(self.path_indexed_sentences,'w') as outfile:
-            json.dump(indexed_sentences,outfile)
-        # finding gensim weights
+            json.dump(vocab, outfile)
+         # finding gensim weights
         weights = model.wv.syn0
         # storeing weights in wordembeddings.npz file
-        print("Saving Word Embeddings into the file")
         np.save(open(self.path_word_embeddings, 'wb'), weights)
         # dump the word2vec model in dump file word2vec_model
-        print("Saving Model into the file")
         with open(self.path_word2vec_model, 'wb') as output:
             pickle.dump(model, output)
 
+    def get_raw_text(self, dataset):
+        raw_text = ""
+        passage_text = "" 
+        question_text = ""
+        passage_text_list = []
+        question_text_list = []
+        for data in dataset:
+            passage_text_list.append(data['Paragraph'])
+            question_text_list.extend(data['Question'])                
+        passage_text = "".join(passage_text_list)
+        question_text = " ".join(question_text_list)
+        raw_text = passage_text + " " + question_text
+        raw_text = raw_text.lower()
+        return raw_text
+    
     def load_embeddings(self):
-        if not (os.path.isfile(self.path_word2vec_model) or 
-                os.path.isfile(self.path_word_embeddings) or 
-                os.path.isfile(self.path_indexed_sentences) or
-                os.path.isfile(self.path_indexed_vocabulary) or
-                os.path.isfile(self.path_pos_indexed_vocabulary) or
-                os.path.isfile(self.path_pos_categorical_indexed_sentences)):
+        if not (os.path.isfile(self.path_word2vec_model) and 
+                os.path.isfile(self.path_word_embeddings) and 
+                os.path.isfile(self.path_indexed_vocabulary) and
+                os.path.isfile(self.path_pos_indexed_vocabulary)):
+            print("Loading embeddings....")
             dataset = get_squad_wiki_data()
-            raw_text = ""
-            passage_text = "" 
-            question_text = ""
-            passage_text_list = []
-            question_text_list = []
-            for data in dataset:
-                passage_text_list.append(data['Paragraph'])
-                question_text_list.extend(data['Question'])                
-            passage_text = "".join(passage_text_list)
-            question_text = ".".join(question_text_list)
-            raw_text = passage_text + " " + question_text
-            raw_text = raw_text.lower()
-            self.preprocessor(raw_text, self.size, self.window, self.min_count, self.workers)        
+            raw_text = self.get_raw_text(dataset) 
+            self.preprocessor(raw_text, self.size, self.window, self.min_count, self.workers)
+        print("Loading the embeddings from the cache")
+        if not (os.path.isfile(self.path_pos_categorical_indexed_sentences) and 
+            os.path.isfile(self.path_indexed_sentences)):
+            print("Starting tokenized, pos squad data.....")
+            squad_data = get_squad_data()
+            raw_text = self.get_raw_text(squad_data) 
+            self.create_tokenized_squad_corpus(raw_text)
+            self.create_pos_tokenized_squad_corpus(raw_text)
+        
+        
 
     # Will load and return weights from the existing embedding.npz file
     def get_weights(self):
@@ -164,9 +159,23 @@ class Embeddings:
         with open(self.path_pos_categorical_indexed_sentences, 'r') as f:
             tokenized_pos_sentences = json.load(f)
         return tokenized_pos_sentences
+    
+    def create_tokenized_squad_corpus(self, squad_corpus):
+        print("Creating Tokenized Squad Corpus")
+        tokenized_indexed_sentences = self.tokenize_index_sentence(squad_corpus)
+        with open(self.path_indexed_sentences, "w") as f:
+            json.dump(tokenized_indexed_sentences, f)
+        
+    def create_pos_tokenized_squad_corpus(self, squad_corpus):
+        print("Creating Tokenized Squad Corpus")
+        tokenized_pos_sentences = self.tag_sentence(squad_corpus)
+        pos2idx, idx2pos = self.get_pos_vocabulary()
+        categorical_pos_sentences = [to_categorical([pos2idx[word] for word in sent], num_classes = len(pos2idx)).tolist() for sent in tokenized_pos_sentences] 
+        with open(self.path_pos_categorical_indexed_sentences, "w") as f:
+            json.dump(categorical_pos_sentences, f)
 
 
-# In[10]:
+# In[3]:
 
 start_date = datetime.datetime.now()
 e = Embeddings(100, 4, 1, 4)
@@ -175,27 +184,27 @@ end_date = datetime.datetime.now()
 #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
 
 
-# In[11]:
+# In[4]:
 
 # e.get_model()
 
 
-# In[12]:
+# In[5]:
 
 # e.get_weights()
 
 
-# In[13]:
+# In[6]:
 
 # e.get_vocabulary()
 
 
-# In[14]:
+# In[7]:
 
 # e.get_tokenized_indexed_sentences()
 
 
-# In[15]:
+# In[8]:
 
 # print(e.tokenize_index_sentence("this is Nikola Tesla"))
 # e.tag_sentence("this is nikola tesla")
@@ -204,9 +213,4 @@ end_date = datetime.datetime.now()
 # In[ ]:
 
 #vocab = ['PUNCT','SYM','X','ADJ','VERB','CONJ','NUM','DET','ADV','PROPN','NOUN','PART','INTJ','CCONJ','','']
-
-
-# In[ ]:
-
-
 
