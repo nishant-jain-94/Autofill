@@ -150,7 +150,7 @@ for epoch in range(1):
     mean_tr_accuracy = []
     mean_tr_loss = []
     for i in range(total_batches):
-        print("Done with {0}/{1} batches".format(i, total_batches))
+        # print("Done with {0}/{1} batches".format(i, total_batches))
         train_accuracy, train_loss = model.train_on_batch(subsamples_in[i::total_batches][:min_batch_len], subsamples_out[i::total_batches][:min_batch_len])
         mean_tr_accuracy.append(train_accuracy)
         mean_tr_loss.append(train_loss)
