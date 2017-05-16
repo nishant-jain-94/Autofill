@@ -173,15 +173,31 @@ class Embeddings:
         categorical_pos_sentences = [to_categorical([pos2idx[word] for word in sent], num_classes = len(pos2idx)).tolist() for sent in tokenized_pos_sentences] 
         with open(self.path_pos_categorical_indexed_sentences, "w") as f:
             json.dump(categorical_pos_sentences, f)
+            
+    def load_google_word2vec_model(self):
+        #google_word2vec_model = gensim.models.KeyedVectors.load_word2vec_format('../model/GoogleNews-vectors-negative300.bin',binary = True, encoding = 'utf8')
+        print("LOADING TRAINED SQUAD AND WIKI WORD2VEC MODEL.....")
+        wiki_word2vec_model = self.get_model()
+        print("INTERSECTING GOOGLES WORD2VEC MODEL WITH WORD2VEC MODEL")
+        wiki_word2vec_model.intersect_word2vec_format(fname = '../model/GoogleNews-vectors-negative300.bin' , lockf = 1.0, binary = True)        
 
 
 # In[3]:
 
 start_date = datetime.datetime.now()
-e = Embeddings(100, 4, 1, 4)
+print("EMBEDDING(300,4,1,4) STARTED .....")
+e = Embeddings(300, 4, 1, 4)
+print("EMBEDDING(300,4,1,4) COMPLETED .....")
 end_date = datetime.datetime.now()
 #print("TOTAL TIME ELAPSED IN EMBEDDINGS")
 #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
+
+
+# In[ ]:
+
+print("CALLING INTERSECT FUNCTION OF EMBEDDING .....")
+e.load_google_word2vec_model()
+print("WORD2VEC INTERSECTION DONE.....")
 
 
 # In[4]:
