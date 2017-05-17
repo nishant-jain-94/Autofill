@@ -3,7 +3,7 @@
 
 # ### importing require packages
 
-# In[98]:
+# In[1]:
 
 from __future__ import print_function
 
@@ -32,14 +32,14 @@ import random
 
 # ## Instantiate Embeddings 
 
-# In[99]:
+# In[2]:
 
 embeddings = Embeddings(100, 4, 1, 4)
 
 
 # ### getting data from preprocessing
 
-# In[100]:
+# In[3]:
 
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
@@ -49,7 +49,7 @@ tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 # ### generating training data
 
-# In[101]:
+# In[4]:
 
 window_size = 3
 vocab_size = len(word2index)
@@ -58,7 +58,7 @@ print(vocab_size)
 #sentence_max_length = max([len(sentence) for sentence in tokenized_indexed_sentence ])
 
 
-# In[102]:
+# In[5]:
 
 seq_in = []
 seq_out = []
@@ -79,7 +79,7 @@ print ("Number of samples : ", n_samples)
 
 # ## Defining model
 
-# In[103]:
+# In[6]:
 
 # Changes to the model to be done here
 model = Sequential()
@@ -93,7 +93,7 @@ model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
-# In[104]:
+# In[7]:
 
 model_weights_path = "../weights/lstm-2-512-batchsize-128-epochs-15"
 if not os.path.exists(model_weights_path):
@@ -104,14 +104,14 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # ## Train Model
 
-# In[106]:
+# In[8]:
 
-model_fit_summary = model.fit(seq_in, seq_out, epochs=15, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
+model_fit_summary = model.fit(seq_in[:2], seq_out[:2], epochs=15, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
 
 
 # ### model predict
 
-# In[107]:
+# In[9]:
 
 start =0
 pattern = list(seq_in[start])
@@ -126,59 +126,63 @@ for i in range(10):
 
 # ## Accuracy
 
-# In[108]:
+# In[10]:
 
-def accuracy(no_of_preds):
-    correct=0
-    wrong=0
-    random.seed(1)
-    for i in random.sample(range(0, seq_in.shape[0]), no_of_preds):
-        start = i
-        sentence = list(seq_in[start])
-        prediction = model.predict(np.array([sentence]))
-        pred_word = word2vec_model.similar_by_vector(prediction[0])[0][0]
-        next_word_index = list(seq_in[start+1])
-        next_word = index2word[next_word_index[-1]]
-        sim = word2vec_model.similarity(pred_word,next_word)
-        if (sim >= 0.8):
-            correct +=1
-        else : wrong +=1
-    print('correct: '+str(correct)+(' wrong: ')+str(wrong))
-    accur = float(correct/(correct+wrong))
-    return  accur
-    
+def accuracy():
+    count = 0
+    correct = 0
+    for sub_sample_in, sub_sample_out in zip(seq_in[:5], seq_out[:5]):
+        ypred = model.predict_on_batch(np.expand_dims(sub_sample_in, axis=0))[0]
+        ytrue = sub_sample_out
+        pred_word = word2vec_model.similar_by_vector(ypred)[0][0]
+        true_word = word2vec_model.similar_by_vector(ytrue)[0][0]
+        similarity = word2vec_model.similarity(pred_word, true_word)
+        if similarity >= 0.85:
+            correct += 1
+        count += 1
+    print("Accuracy {0}".format(correct/count))
 
 
-# In[109]:
+# In[11]:
+
+seq_out[0]
+
+
+# In[12]:
 
 model_results = model_fit_summary.history
 
 
-# In[110]:
+# In[13]:
 
 model_results.update(model_fit_summary.params)
 
 
-# In[111]:
+# In[14]:
 
-model_results["train_accuracy"] = accuracy(seq_in.shape[0])
+model_results["train_accuracy"] = accuracy()
 
 
-# In[112]:
+# In[15]:
 
 # n = no. of predictions
 # accuracy = accuracy(400)
 print(model_results["train_accuracy"])
 
 
-# In[113]:
+# In[18]:
 
-text_file_path = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful/model_results.json"
+text_file_path = "../weights/lstm-2-512-batchsize-128-epochs-15/model_results.json"
 
 
-# In[114]:
+# In[19]:
 
 with open(text_file_path, "w") as f:
         json.dump(model_results, f)
         
+
+
+# In[ ]:
+
+
 
