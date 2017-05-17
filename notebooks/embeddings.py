@@ -187,9 +187,9 @@ class Embeddings:
 # In[3]:
 
 # start_date = datetime.datetime.now()
-print("EMBEDDING(300,4,1,4) STARTED .....")
-e = Embeddings(300, 4, 1, 4)
-print("EMBEDDING(300,4,1,4) COMPLETED .....")
+print("EMBEDDING(100,4,1,4) STARTED .....")
+e = Embeddings(100, 4, 1, 4)
+print("EMBEDDING(100,4,1,4) COMPLETED .....")
 # end_date = datetime.datetime.now()
 # #print("TOTAL TIME ELAPSED IN EMBEDDINGS")
 # #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
@@ -197,15 +197,15 @@ print("EMBEDDING(300,4,1,4) COMPLETED .....")
 
 # In[ ]:
 
-print("CALLING INTERSECT FUNCTION OF EMBEDDING .....")
-intersected_model = e.load_google_word2vec_model()
-print("WORD2VEC INTERSECTION DONE.....")
-word2vec_model = e.get_model()
-print("Comparing original word2vec model and intersected model")
-word = "intersection"
-print("word ",word)
-print("word2vec model vector ",word2vec_model[word])
-print("intersected model vector ",intersected_model[word])
+#print("CALLING INTERSECT FUNCTION OF EMBEDDING .....")
+#intersected_model = e.load_google_word2vec_model()
+#print("WORD2VEC INTERSECTION DONE.....")
+#word2vec_model = e.get_model()
+#print("Comparing original word2vec model and intersected model")
+#word = "intersection"
+#print("word ",word)
+#print("word2vec model vector ",word2vec_model[word])
+#print("intersected model vector ",intersected_model[word])
 
 
 # In[4]:
