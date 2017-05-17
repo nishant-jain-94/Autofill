@@ -3,7 +3,7 @@
 
 # ### importing require packages
 
-# In[1]:
+# In[21]:
 
 from __future__ import print_function
 
@@ -106,7 +106,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # In[8]:
 
-model_fit_summary = model.fit(seq_in[:2], seq_out[:2], epochs=15, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
+model_fit_summary = model.fit(seq_in, seq_out, epochs=15, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
 
 
 # ### model predict
