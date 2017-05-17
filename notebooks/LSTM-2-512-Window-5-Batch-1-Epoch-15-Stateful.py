@@ -136,7 +136,7 @@ for epoch in range(15):
     mean_loss = np.mean(mean_tr_loss)
     print("Mean Accuracy", mean_tr_accuracy)
     print("Mean Loss", mean_tr_loss)
-    filepath = "../weights/LSTM-2-512-Window-5-Batch-1-Epoch-10-Stateful/weights-epoch-{0}-acc-{1}-loss-{2}".format(epoch+1, mean_tr_accuracy, mean_tr_loss)
+    filepath = "../weights/LSTM-2-512-Window-5-Batch-1-Epoch-10-Stateful/weights-epoch-{0}-acc-{1}-loss-{2}".format(epoch+1, mean_accuracy, mean_loss)
     model.save_weights(filepath)
 
 
