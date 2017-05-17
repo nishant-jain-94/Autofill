@@ -87,6 +87,8 @@ model.add(Dropout(0.2))
 model.add(LSTM(512))
 #model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation='relu'))
+model.load_weights("../weights/lstm-2-1024-512-batchsize-128-epochs-25/weights.24-0.22.hdf5")
+
 model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
@@ -104,12 +106,12 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # In[8]:
 
-model_fit_summary = model.fit(seq_in, seq_out, epochs=25, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
+#model_fit_summary = model.fit(seq_in, seq_out, epochs=25, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
 
 
 # ### model predict
 
-# In[9]:
+# In[21]:
 
 start = 100
 pattern = list(seq_in[start])
@@ -124,48 +126,46 @@ for i in range(10):
 
 # ## Accuracy
 
-# In[10]:
+# In[32]:
 
 def accuracy():
     count = 0
     correct = 0
-    for sub_sample_in, sub_sample_out in zip(seq_in[:5], seq_out[:5]):
+    for sub_sample_in, sub_sample_out in zip(seq_in, seq_out):
         ypred = model.predict_on_batch(np.expand_dims(sub_sample_in, axis=0))[0]
         ytrue = sub_sample_out
         pred_word = word2vec_model.similar_by_vector(ypred)[0][0]
         true_word = word2vec_model.similar_by_vector(ytrue)[0][0]
         similarity = word2vec_model.similarity(pred_word, true_word)
-        if similarity >= 0.85:
+        if similarity <= .85:
             correct += 1
         count += 1
     print("Accuracy {0}".format(correct/count))
 
 
-# In[11]:
+# In[33]:
 
 #seq_out[0]
 
 
-# In[22]:
+# In[34]:
 
-model_results = model_fit_summary.history
-
-
-# In[23]:
-
-model_results.update(model_fit_summary.params)
+#model_results = model_fit_summary.history
 
 
-# In[24]:
+# In[35]:
 
-model_results["train_accuracy"] = accuracy()
+#model_results.update(model_fit_summary.params)
 
 
-# In[28]:
+# In[36]:
 
-# n = no. of predictions
-# accuracy = accuracy(400)
-#print(model_results)
+#model_results["train_accuracy"] = accuracy()
+
+
+# In[37]:
+
+accuracy = accuracy()
 
 
 # In[26]:
