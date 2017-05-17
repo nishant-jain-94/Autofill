@@ -88,16 +88,17 @@ class Embeddings:
 
     def get_raw_text(self, dataset):
         raw_text = ""
-        passage_text = "" 
+        #passage_text = "" 
         question_text = ""
-        passage_text_list = []
+        #passage_text_list = []
         question_text_list = []
         for data in dataset:
-            passage_text_list.append(data['Paragraph'])
+            #passage_text_list.append(data['Paragraph'])
             question_text_list.extend(data['Question'])                
-        passage_text = "".join(passage_text_list)
+        #passage_text = "".join(passage_text_list)
         question_text = " ".join(question_text_list)
-        raw_text = passage_text + " " + question_text
+        #raw_text = passage_text + " " + question_text
+        raw_text = question_text
         raw_text = raw_text.lower()
         return raw_text
     
@@ -185,9 +186,9 @@ class Embeddings:
 # In[3]:
 
 # start_date = datetime.datetime.now()
-# print("EMBEDDING(300,4,1,4) STARTED .....")
-# e = Embeddings(300, 4, 1, 4)
-# print("EMBEDDING(300,4,1,4) COMPLETED .....")
+print("EMBEDDING(100,4,1,4) STARTED .....")
+e = Embeddings(100, 4, 1, 4)
+print("EMBEDDING(100,4,1,4) COMPLETED .....")
 # end_date = datetime.datetime.now()
 # #print("TOTAL TIME ELAPSED IN EMBEDDINGS")
 # #print(((end_date - start_date).hour)," HOURS ",((end_date - start_date).minute)," MINUTES ",((end_date - start_date).second)," SECONDS ")
