@@ -87,7 +87,7 @@ model.add(Dropout(0.2))
 model.add(LSTM(512))
 #model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation='relu'))
-model.load_weights("../weights/lstm-2-1024-512-batchsize-128-epochs-25/weights.24-0.22.hdf5")
+#model.load_weights("../weights/lstm-2-1024-512-batchsize-128-epochs-25/weights.24-0.22.hdf5")
 
 model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
@@ -106,7 +106,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # In[8]:
 
-#model_fit_summary = model.fit(seq_in, seq_out, epochs=25, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
+model_fit_summary = model.fit(seq_in, seq_out, epochs=25, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
 
 
 # ### model predict
@@ -148,19 +148,19 @@ def accuracy():
 #seq_out[0]
 
 
-# In[34]:
+# In[38]:
 
-#model_results = model_fit_summary.history
+model_results = model_fit_summary.history
 
 
 # In[35]:
 
-#model_results.update(model_fit_summary.params)
+model_results.update(model_fit_summary.params)
 
 
 # In[36]:
 
-#model_results["train_accuracy"] = accuracy()
+model_results["train_accuracy"] = accuracy()
 
 
 # In[37]:
@@ -176,7 +176,7 @@ text_file_path = "../weights/lstm-2-1024-512-batchsize-128-epochs-25/model_resul
 # In[27]:
 
 with open(text_file_path, "w") as f:
-        json.dump(model_results, f)
+       json.dump(model_results, f)
         
 
 
