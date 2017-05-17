@@ -3,7 +3,7 @@
 
 # ### importing require packages
 
-# In[ ]:
+# In[1]:
 
 from __future__ import print_function
 
@@ -32,14 +32,14 @@ import random
 
 # ## Instantiate Embeddings 
 
-# In[ ]:
+# In[2]:
 
 embeddings = Embeddings(100, 4, 1, 4)
 
 
 # ### getting data from preprocessing
 
-# In[ ]:
+# In[3]:
 
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
@@ -49,7 +49,7 @@ tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 # ### generating training data
 
-# In[ ]:
+# In[4]:
 
 window_size = 3
 vocab_size = len(word2index)
@@ -58,7 +58,7 @@ print(vocab_size)
 #sentence_max_length = max([len(sentence) for sentence in tokenized_indexed_sentence ])
 
 
-# In[ ]:
+# In[5]:
 
 seq_in = []
 seq_out = []
@@ -79,7 +79,7 @@ print ("Number of samples : ", n_samples)
 
 # ## Defining model
 
-# In[ ]:
+# In[31]:
 
 # Changes to the model to be done here
 model = Sequential()
@@ -87,14 +87,15 @@ model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_wei
 model.add(LSTM(512,return_sequences =True))
 model.add(Dropout(0.2))
 model.add(LSTM(512))
+#model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation='relu'))
 model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
-# In[ ]:
+# In[32]:
 
-model_weights_path = "../weights/LSTM_1_Layer"
+model_weights_path = "../weights/lstm-2-256-batchsize-128-epochs-10"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/weights.{epoch:02d}-{val_acc:.2f}.hdf5'
@@ -103,16 +104,16 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # ## Train Model
 
-# In[ ]:
+# In[33]:
 
-model.fit(seq_in, seq_out, epochs=10, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
+model.fit(seq_in, seq_out, epochs=3, verbose=1, validation_split=0.2, batch_size=128, callbacks=[checkpoint])
 
 
 # ### model predict
 
-# In[ ]:
+# In[30]:
 
-start = 97
+start =0
 pattern = list(seq_in[start])
 print("\"",' '.join(index2word[index] for index in pattern))
 for i in range(10):
@@ -125,7 +126,7 @@ for i in range(10):
 
 # ## Accuracy
 
-# In[ ]:
+# In[25]:
 
 def accuracy(no_of_preds):
     correct=0
@@ -148,10 +149,15 @@ def accuracy(no_of_preds):
     
 
 
-# In[ ]:
+# In[26]:
 
 # n = no. of predictions
-accuracy(400)
+accuracy(seq_in.shape[0])
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:
