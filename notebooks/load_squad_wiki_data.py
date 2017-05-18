@@ -44,13 +44,19 @@ def combine_squad_dev_train():
 
 def combine_squad_data():
     """Merges two files squad_data and wiki_data and generates an merged file squad_wiki_data.json  """
-    with open('../data/squad_data.json') as data_file:
+    with open('../data/dev-v1.1.json') as data_file:
         dataset = json.load(data_file)
+    with open('../data/train-v1.1.json') as data_file:
+        dataset1 = json.load(data_file)
     dataset = processing_squad_data(dataset)
+    dataset1 = processing_squad_data(dataset1)
     final_dict = {}
     final_para = []
     final_question = []
     for data in dataset:
+        final_para.append(data['Passages'])
+        final_question.extend(data['Question'])
+    for data in dataset1:
         final_para.append(data['Passages'])
         final_question.extend(data['Question'])
     final_dict['Paragraph'] = ''.join(final_para)
