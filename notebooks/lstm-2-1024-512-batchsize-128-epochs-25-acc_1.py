@@ -34,7 +34,7 @@ import random
 
 # In[4]:
 
-embeddings = Embeddings(100, 4, 1, 4)
+embeddings = Embeddings(300, 4, 1, 4)
 
 
 # ### getting data from preprocessing
@@ -135,17 +135,17 @@ for i in range(5):
 
 # In[15]:
 
-e_model = embeddings.get_model()
+#e_model = embeddings.get_model()
 
 
 # In[16]:
 
-e_model.similar_by_word("profitabl")
+#e_model.similar_by_word("profitabl")
 
 
 # ## Accuracy
 
-# In[17]:
+# In[19]:
 
 def accuracy():
     count = 0
@@ -162,29 +162,29 @@ def accuracy():
     print("Accuracy {0}".format(correct/count))
 
 
-# In[18]:
+# In[20]:
 
 #seq_out[0]
 
 
-# In[ ]:
+# In[21]:
 
 accuracy()
 
 
-# In[68]:
+# In[22]:
 
-model_results = model_fit_summary.history
+#model_results = model_fit_summary.history
 
 
 # In[23]:
 
-model_results.update(model_fit_summary.params)
+#model_results.update(model_fit_summary.params)
 
 
 # In[67]:
 
-model_results["train_accuracy"] = accuracy()
+#model_results["train_accuracy"] = accuracy()
 
 
 # In[28]:
@@ -196,12 +196,12 @@ model_results["train_accuracy"] = accuracy()
 
 # In[26]:
 
-text_file_path = "../weights/lstm-2-1024-512-batchsize-128-epochs-25/model_results.json"
+#text_file_path = "../weights/lstm-2-1024-512-batchsize-128-epochs-25/model_results.json"
 
 
 # In[27]:
 
-with open(text_file_path, "w") as f:
+#with open(text_file_path, "w") as f:
         json.dump(model_results, f)
         
 
