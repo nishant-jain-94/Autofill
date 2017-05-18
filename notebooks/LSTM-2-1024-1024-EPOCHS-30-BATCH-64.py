@@ -34,7 +34,7 @@ import random
 
 # In[ ]:
 
-#model_name = LAYER_NAME-NO.OF_LAYERS-L1SIZE-L2SIZE-EPOCHS-NO.OF.EPOCHS #MODEL_NAME 
+#model_name = LAYER_NAME-NO.OF_LAYERS-L1SIZE-L2SIZE-EPOCHS-NO.OF.EPOCHS-BATCH_SIZE_N #MODEL_NAME 
 
 
 # In[2]:
@@ -50,12 +50,12 @@ custom_accuracy = 0
 loss_function = 'mse' # mse
 
 
-# In[3]:
+# In[4]:
 
-model_name = 'LSTM-2-1024-1024-EPOCHS-30'
+model_name = 'LSTM-2-1024-1024-EPOCHS-30-BATCH-64'
 
 
-# In[12]:
+# In[5]:
 
 print(model_name)
 
@@ -115,8 +115,8 @@ model = Sequential()
 model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_weights.shape[1], weights=[word2vec_weights]))
 model.add(LSTM(1024, return_sequences=True))
 #model.add(Dropout(0.2))
-model.add(LSTM(512))
-model.add(Dropout(0.2))
+model.add(LSTM(1024))
+#model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation=activation))
 model.compile(loss=loss_function, optimizer='adam',metrics=['accuracy'])
 model.summary()
@@ -160,7 +160,7 @@ for i in range(10):
 def accuracy():
     count = 0
     correct = 0
-    for sub_sample_in, sub_sample_out in zip(seq_in[:5], seq_out[:5]):
+    for sub_sample_in, sub_sample_out in zip(seq_in, seq_out):
         ypred = model.predict_on_batch(np.expand_dims(sub_sample_in, axis=0))[0]
         ytrue = sub_sample_out
         pred_word = word2vec_model.similar_by_vector(ypred)[0][0]
