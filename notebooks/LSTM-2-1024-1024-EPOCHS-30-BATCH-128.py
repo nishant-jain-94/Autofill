@@ -39,12 +39,12 @@ import random
 
 # In[2]:
 
-word_embedding_dimension = 100
+word_embedding_dimension = 300
 word_embedding_window_size = 4
-batch_size = 64 # 32, 64, 128
+batch_size = 128 # 32, 64, 128
 epochs = 30 # 10, 15, 30
-window_size = 4 # 3, 4, 5
-accuracy_threshold = 0.85
+window_size = 5 # 3, 4, 5
+accuracy_threshold = 1.0
 activation = 'relu' # sigmoid, relu, softmax
 custom_accuracy = 0
 loss_function = 'mse' # mse
