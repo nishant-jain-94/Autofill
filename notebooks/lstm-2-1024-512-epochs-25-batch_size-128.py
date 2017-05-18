@@ -37,39 +37,34 @@ import random
 #model_name = LAYER_NAME-NO.OF_LAYERS-L1SIZE-L2SIZE-EPOCHS-NO.OF.EPOCHS-BATCH_SIZE_N #MODEL_NAME 
 
 
-# In[2]:
+# In[3]:
 
-word_embedding_dimension = 100
+word_embedding_dimension = 300
 word_embedding_window_size = 4
-batch_size = 64 # 32, 64, 128
-epochs = 30 # 10, 15, 30
-window_size = 4 # 3, 4, 5
-accuracy_threshold = 0.85
+batch_size = 128 # 32, 64, 128
+epochs = 25 # 10, 15, 30
+window_size = 5 # 3, 4, 5
+accuracy_threshold = 1
 activation = 'relu' # sigmoid, relu, softmax
 custom_accuracy = 0
 loss_function = 'mse' # mse
 
 
-# In[4]:
+# In[2]:
 
-model_name = 'LSTM-2-1024-1024-EPOCHS-30-BATCH-64'
-
-
-# In[5]:
-
-print(model_name)
+model_name = "lstm-2-1024-512-epochs-25-batch_size-128"
 
 
 # ## Instantiate Embeddings 
 
-# In[13]:
+# In[ ]:
 
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
 
 
 # ### getting data from preprocessing
 
-# In[14]:
+# In[ ]:
 
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
@@ -79,7 +74,7 @@ tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 # ### generating training data
 
-# In[15]:
+# In[ ]:
 
 vocab_size = len(word2index)
 print(vocab_size)
@@ -87,7 +82,7 @@ print(vocab_size)
 #sentence_max_length = max([len(sentence) for sentence in tokenized_indexed_sentence ])
 
 
-# In[16]:
+# In[ ]:
 
 seq_in = []
 seq_out = []
@@ -114,8 +109,8 @@ print ("Number of samples : ", n_samples)
 model = Sequential()
 model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_weights.shape[1], weights=[word2vec_weights]))
 model.add(LSTM(1024, return_sequences=True))
-#model.add(Dropout(0.2))
-model.add(LSTM(1024))
+model.add(Dropout(0.2))
+model.add(LSTM(512))
 #model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation=activation))
 model.compile(loss=loss_function, optimizer='adam',metrics=['accuracy'])
@@ -180,12 +175,12 @@ custom_accuracy = accuracy()
 
 # In[ ]:
 
-#x = model.layers[1]
+x = model.layers[1]
 
 
 # In[ ]:
 
-#x.get_config()
+x.get_config()
 
 
 # In[ ]:
@@ -221,7 +216,7 @@ with open(text_file_path, "w") as f:
 
 # In[ ]:
 
-#model_results
+model_results
 
 
 # In[ ]:
