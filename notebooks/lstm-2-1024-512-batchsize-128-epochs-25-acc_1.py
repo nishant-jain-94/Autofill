@@ -202,7 +202,7 @@ accuracy()
 # In[27]:
 
 #with open(text_file_path, "w") as f:
-        json.dump(model_results, f)
+        #json.dump(model_results, f)
         
 
 
