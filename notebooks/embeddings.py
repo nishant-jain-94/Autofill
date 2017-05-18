@@ -188,13 +188,3 @@ class Embeddings:
         print("INTERSECTING GOOGLES WORD2VEC MODEL WITH WORD2VEC MODEL")
         wiki_word2vec_model.intersect_word2vec_format(fname = '../model/GoogleNews-vectors-negative300.bin' , lockf = 1.0, binary = True)        
 
-
-# In[3]:
-
-e = Embeddings(300, 4, 1, 4)
-
-
-# In[ ]:
-
-
-
