@@ -92,7 +92,7 @@ model.add(Dropout(0.2))
 model.add(LSTM(512))
 #model.add(Dropout(0.2))
 model.add(Dense(word2vec_weights.shape[1], activation='relu'))
-model.load_weights("../weights/lstm-2-1024-512-batchsize-128-epochs-25/weights.24-0.22.hdf5")
+model.load_weights("../weights/lstm-2-1024-512-batchsize-128-epochs-25/weights.24-0.23.hdf5")
 model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
