@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 import numpy as np
 import os
@@ -20,7 +20,7 @@ from keras.utils import to_categorical
 
 # ## Setting Parameters
 
-# In[ ]:
+# In[2]:
 
 word_embedding_dimension = 300
 word_embedding_window_size = 4
@@ -33,21 +33,25 @@ custom_accuracy = 0
 loss_function = 'mse' # mse
 
 
-# In[ ]:
+# In[3]:
 
 model_name = 'POS_MultiClass_LSTM' + '_1024_1024_' + loss_function + "_" + activation + "_" + str(window_size) + "_" + str(batch_size) #MODEL_NAME #POS-LSTM
 
 
-# In[ ]:
+# In[4]:
 
 with open('../data/word_tokenized_sentence_300_4_1_4.json', 'r') as myfile:
     raw_data = json.load(myfile)
 
 
-# In[ ]:
+# In[6]:
 
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
-test_data = embeddings.tag_sentence(raw_data) #find_POS(raw_data)
+
+
+# In[8]:
+
+test_data = embeddings.find_POS(raw_data) #find_POS(raw_data)
 
 
 # In[ ]:
