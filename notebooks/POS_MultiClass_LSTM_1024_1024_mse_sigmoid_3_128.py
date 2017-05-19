@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[867]:
+# In[1]:
 
 import numpy as np
 import os
@@ -11,7 +11,6 @@ import datetime
 import json
 import pandas as pd
 import itertools 
-from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
 from keras.callbacks import ModelCheckpoint
@@ -21,12 +20,12 @@ from keras.utils import to_categorical
 
 # ## Setting Parameters
 
-# In[868]:
+# In[2]:
 
 word_embedding_dimension = 300
 word_embedding_window_size = 4
 batch_size = 128 # 32, 64, 128
-epochs = 2 # 10, 15, 30
+epochs = 15 # 10, 15, 30
 window_size = 3 # 3, 4, 5
 accuracy_threshold = 0.85
 activation = 'sigmoid' # sigmoid, relu, softmax
@@ -34,38 +33,34 @@ custom_accuracy = 0
 loss_function = 'mse' # mse
 
 
-# In[869]:
+# In[3]:
 
 model_name = 'POS_MultiClass_LSTM' + '_1024_1024_' + loss_function + "_" + activation + "_" + str(window_size) + "_" + str(batch_size) #MODEL_NAME #POS-LSTM
 
 
-# In[918]:
-
-model_name
-
-
-# In[906]:
+# In[4]:
 
 with open('../data/word_tokenized_sentence_300_4_1_4.json', 'r') as myfile:
     raw_data = json.load(myfile)
 
 
-# In[882]:
+# In[6]:
 
-test_data = embeddings.tokenize_sentence(raw_data)
-
-
-# In[912]:
-
-test_data = embeddings.find_POS(raw_data)
+embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
+pos2index, index2pos = embeddings.get_pos_vocabulary()
 
 
-# In[916]:
+# In[8]:
+
+test_data = embeddings.find_POS(raw_data) #find_POS(raw_data)
+
+
+# In[ ]:
 
 whole_test_data = [word for sent in test_data for word in sent]
 
 
-# In[917]:
+# In[ ]:
 
 new_data = []
 for i in range(len(whole_test_data)-window_size-1):
@@ -73,17 +68,17 @@ for i in range(len(whole_test_data)-window_size-1):
     new_data.append(x)
 
 
-# In[886]:
+# In[ ]:
 
 new_data = [[data[:3], data[3]] for data in new_data]
 
 
-# In[887]:
+# In[ ]:
 
 vocab = ['PUNCT','SYM','X','ADJ','VERB','CONJ','NUM','DET','ADV','PROPN','NOUN','PART','INTJ','CCONJ','SPACE','ADP','SCONJ','AUX', 'PRON']
 
 
-# In[888]:
+# In[ ]:
 
 new_data.sort()
 new_seq_in = []
@@ -105,12 +100,7 @@ new_seq_in = np.array(new_seq_in)
 new_seq_out = np.array(new_seq_out)
 
 
-# In[890]:
-
-len(new_seq_out)
-
-
-# In[898]:
+# In[ ]:
 
 # Changes to the model to be done here
 model = Sequential()
@@ -123,7 +113,7 @@ model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accura
 model.summary()
 
 
-# In[899]:
+# In[ ]:
 
 model_weights_path = "../weights/"+ model_name
 if not os.path.exists(model_weights_path):
@@ -132,12 +122,12 @@ checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.h
 checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
 
 
-# In[900]:
+# In[ ]:
 
-model_fit_summary = model.fit(x_data, y_data, epochs=epochs, batch_size=batch_size, verbose=1, validation_split=0.25, callbacks=[checkpoint])
+model_fit_summary = model.fit(new_seq_in, new_seq_out, epochs=epochs, batch_size=batch_size, verbose=1, validation_split=0.25, callbacks=[checkpoint])
 
 
-# In[902]:
+# In[ ]:
 
 check_ori = 0
 check_pre = 0
@@ -172,7 +162,7 @@ print("Correct predictions: ",counter, '\nTotal Predictions: ',test_end - test_s
 custom_accuracy = counter/(test_end-test_start)
 
 
-# In[32]:
+# In[ ]:
 
 model_results = model_fit_summary.history
 model_results.update(model_fit_summary.params)
