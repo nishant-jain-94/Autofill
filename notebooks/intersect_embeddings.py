@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 import re
 import os
@@ -19,7 +19,7 @@ nlp = spacy.load('en', parser=False, matcher=False, add_vectors=False)
 nlp_en = English()
 
 
-# In[ ]:
+# In[2]:
 
 class MakeIter(object):
     def __init__(self, generator_func, **kwargs):
@@ -144,9 +144,18 @@ class Embeddings:
         for entity in doc.ents:
             raw_text = raw_text.replace(str(entity), "_".join(str(entity).split()))
         return raw_text
+    
+    def get_indexed_query(self, query):
+        query = self.noun_chunkers(query)
+        query = "SQUADSTART " + re.sub(r'[^\w\'\+\-\=\*\s\^]', '', query)
+        word_tokenized_query = word_tokenize(query.lower())
+        word2index, index2word = self.get_vocabulary()
+        indexed_query = [word2index[word] for word in word_tokenized_query if word in word2index.keys()]
+        return indexed_query
+        
 
 
-# In[ ]:
+# In[3]:
 
 e = Embeddings(300, 4, 1, 4)
 
