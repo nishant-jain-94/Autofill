@@ -137,7 +137,7 @@ def accuracy():
         pred_word = word2vec_model.similar_by_vector(ypred)[0][0]
         true_word = word2vec_model.similar_by_vector(ytrue)[0][0]
         similarity = word2vec_model.similarity(pred_word, true_word)
-        if similarity <= .85:
+        if similarity >= .85:
             correct += 1
         count += 1
     print("Accuracy {0}".format(correct/count))
