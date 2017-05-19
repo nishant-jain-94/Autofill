@@ -102,11 +102,6 @@ new_seq_out = np.array(new_seq_out)
 
 # In[ ]:
 
-len(new_seq_out)
-
-
-# In[ ]:
-
 # Changes to the model to be done here
 model = Sequential()
 model.add(LSTM(1024, input_shape=(new_seq_in.shape[1], new_seq_in.shape[2]), return_sequences=True))
@@ -129,7 +124,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbos
 
 # In[ ]:
 
-model_fit_summary = model.fit(x_data, y_data, epochs=epochs, batch_size=batch_size, verbose=1, validation_split=0.25, callbacks=[checkpoint])
+model_fit_summary = model.fit(new_seq_in, new_seq_out, epochs=epochs, batch_size=batch_size, verbose=1, validation_split=0.25, callbacks=[checkpoint])
 
 
 # In[ ]:
