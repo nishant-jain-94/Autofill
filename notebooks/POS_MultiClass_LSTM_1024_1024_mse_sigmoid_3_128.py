@@ -47,6 +47,7 @@ with open('../data/word_tokenized_sentence_300_4_1_4.json', 'r') as myfile:
 # In[6]:
 
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
+pos2index, index2pos = embeddings.get_pos_vocabulary()
 
 
 # In[8]:
