@@ -46,8 +46,8 @@ model_name = "lstm-1024-512-epochs-25-batchsize-128-acc-1"
 
 word_embedding_dimension = 300
 word_embedding_window_size = 4
-batch_size = 128 # 32, 64, 128
-epochs = 25 # 10, 15, 30
+batch_size = 256 # 32, 64, 128
+epochs = 15 # 10, 15, 30
 window_size = 5 # 3, 4, 5
 accuracy_threshold = 1
 activation = 'relu' # sigmoid, relu, softmax
