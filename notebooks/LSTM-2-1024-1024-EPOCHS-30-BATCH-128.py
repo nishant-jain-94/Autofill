@@ -23,7 +23,7 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import LSTM
 from keras.preprocessing import sequence
-from embeddings import Embeddings
+from intersect_embeddings import Embeddings
 from keras.callbacks import ModelCheckpoint
 
 from nltk.tokenize import word_tokenize
@@ -52,7 +52,7 @@ loss_function = 'mse' # mse
 
 # In[4]:
 
-model_name = 'LSTM-2-1024-1024-EPOCHS-30-BATCH-64'
+model_name = 'LSTM-2-1024-1024-EPOCHS-30-BATCH-128'
 
 
 # In[5]:
@@ -70,11 +70,10 @@ embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1,
 # ### getting data from preprocessing
 
 # In[14]:
-
-word2vec_weights = embeddings.get_weights()
+word2vec_model = embeddings.get_intersected_model()
+word2vec_weights = word2vec_model.wv.syn0
 word2index, index2word = embeddings.get_vocabulary()
-word2vec_model = embeddings.get_model()
-tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
+tokenized_indexed_sentences = embeddings.get_indexed_sentences()
 
 
 # ### generating training data
