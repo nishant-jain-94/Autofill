@@ -25,8 +25,8 @@ from keras.utils import to_categorical
 word_embedding_dimension = 300
 word_embedding_window_size = 4
 batch_size = 128 # 32, 64, 128
-epochs = 15 # 10, 15, 30
-window_size = 3 # 3, 4, 5
+epochs = 25 # 10, 15, 30
+window_size = 4 # 3, 4, 5
 accuracy_threshold = 0.85
 activation = 'sigmoid' # sigmoid, relu, softmax
 custom_accuracy = 0
@@ -149,8 +149,8 @@ for i in range(test_start, test_end):
             check_pre = corr_int
             list_for_hist_words.append(word)
             list_for_hist_index.append(corr_int)
-        if corr_int == np.argmax(y_data[test_no:test_no+1]):
-            #print ("original: ",word, corr_int)
+        if corr_int == np.argmax(new_seq_out[test_no:test_no+1]):
+           #print ("original: ",word, corr_int)
             check_ori = corr_int
             list_for_hist_words_ori.append(word)
             list_for_hist_index_ori.append(corr_int)
