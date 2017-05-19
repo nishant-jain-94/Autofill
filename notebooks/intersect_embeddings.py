@@ -157,7 +157,7 @@ class Embeddings:
 
 # In[3]:
 
-e = Embeddings(300, 4, 1, 4)
+#e = Embeddings(300, 4, 1, 4)
 
 
 # In[ ]:
