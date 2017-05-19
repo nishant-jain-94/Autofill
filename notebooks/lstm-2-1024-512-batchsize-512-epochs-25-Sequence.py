@@ -150,7 +150,7 @@ model.summary()
 
 # In[ ]:
 
-model_weights_path = "../weights/lstm-2-1024-512-batchsize-128-epochs-25-Sequence"
+model_weights_path = "../weights/lstm-2-1024-512-batchsize-512-epochs-25-Sequence"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/weights.{epoch:02d}.hdf5'
