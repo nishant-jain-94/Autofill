@@ -137,15 +137,15 @@ print ("Number of samples : ", n_samples)
 # Changes to the model to be done here
 model = Sequential()
 model.add(Embedding(input_dim=new_weights.shape[0], output_dim=new_weights.shape[1], weights=[new_weights], mask_zero=True))
-model.add(Bidirectional(LSTM(1024, return_sequences=True), merge_mode="average"))
-model.add(Bidirectional(LSTM(300, return_sequences=True), merge_mode="average"))
+model.add(Bidirectional(LSTM(1024, return_sequences=True), merge_mode="ave"))
+model.add(Bidirectional(LSTM(300, return_sequences=True), merge_mode="ave"))
 model.compile(loss='cosine_proximity', optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 
 # In[18]:
 
-model_weights_path = "../weights/lstm-3-1024-1024-batchsize-512-epochs-30-Sequence"
+model_weights_path = "../weights/lstm-3-1024-1024-batchsize-256-epochs-30-Sequence"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/weights.{epoch:02d}.hdf5'
@@ -156,7 +156,7 @@ checkpoint = ModelCheckpoint(filepath=checkpoint_path, verbose=1, save_best_only
 
 # In[ ]:
 
-model.fit(seq_in, seq_out, epochs=1, verbose=1, batch_size=512, callbacks=[checkpoint])
+model.fit(seq_in, seq_out, epochs=1, verbose=30, batch_size=256, callbacks=[checkpoint])
 
 
 # ### model predict
