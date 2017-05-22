@@ -3,9 +3,9 @@
 
 # # N-gram-Approach
 
-# ### importing require packages
+# ### Importing require packages
 
-# In[132]:
+# In[1]:
 
 import nltk
 from nltk.tokenize import word_tokenize
@@ -17,13 +17,13 @@ import json
 
 # ### Loading Data
 
-# In[133]:
+# In[2]:
 
 with open("../data/squad_wiki_data.json","r") as outfile:
     dataset = json.load(outfile)
 
 
-# In[134]:
+# In[3]:
 
 questions = dataset[0]['Question']
 questions = ' '.join(questions)
@@ -31,7 +31,7 @@ questions = ' '.join(questions)
 
 # ### Generatng n_grams-bigrams
 
-# In[135]:
+# In[4]:
 
 def generate_conditional_prob_dist(training_passage, n):
     """Given a passage generates ngrams and then subsequently decrements n, where n >= 2 """
@@ -65,35 +65,31 @@ def generate_conditional_prob_dist(training_passage, n):
     return cpdist_list
 
 
-# In[136]:
+# In[5]:
 
 cp_list = generate_conditional_prob_dist(questions, 5)
 
 
-# In[137]:
-
-print(len(cp_list[3][('the',)].samples()))
-cp_list[3][('the',)].samples()
-
-
 # ### Predict the next word function
 
-# In[138]:
+# In[6]:
 
 def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
     
     next_prediction = None
+    residue = ""
     
     # n_gram = tuple of n_words #input to the function
     len_n_grams = len(n_grams)
     
     # to end the recursion
-    if(len_n_grams==0):return #no prediction available
+    if(len_n_grams==0): return #no prediction available
     
     len_cpdist = len(cpdist_list)
     
     #handling sentence with length more than the n_grams generated
     if len_n_grams > len_cpdist: 
+        residue = ' '.join(n_grams[:-len_cpdist])
         n_grams = n_grams[-len_cpdist:]
         len_n_grams = len(n_grams)
     
@@ -111,7 +107,7 @@ def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
             
         if(mode == 'nsent'):
             possible_predictions = []
-            for pred in possible_pred[:2]:
+            for pred in possible_pred[:1]:
                 print(pred)
                 pred_words = list(n_grams)
                 next_pred = pred
@@ -125,24 +121,20 @@ def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
     
     else:
         # If prediciton is not available for the provided n_grams backoff
+        residue = residue + " " + n_grams[0] 
         n_grams = n_grams[1:]
         next_prediction = predict_next_using_n_grams(n_grams, cpdist_list, mode)
         
-    return next_prediction
+    return residue + " " + next_prediction
     
 
 
-# In[149]:
+# In[7]:
 
 def generate_prediction(n_grams, mode="nsent"):
     n_grams = re.sub("[^\w\']", ' ', n_grams).lower()
     n_grams = tuple(nltk.word_tokenize(n_grams))
     return predict_next_using_n_grams(n_grams, cp_list, mode)
-
-
-# In[150]:
-
-#generate_prediction('who is the')
 
 
 # In[ ]:
