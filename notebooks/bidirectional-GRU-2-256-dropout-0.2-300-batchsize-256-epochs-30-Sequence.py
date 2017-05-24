@@ -3,7 +3,7 @@
 
 # ## Importing required packages
 
-# In[ ]:
+# In[1]:
 
 from __future__ import print_function
 
@@ -19,7 +19,7 @@ from keras.layers import Embedding
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
-from keras.layers import LSTM, Bidirectional
+from keras.layers import LSTM, Bidirectional, GRU
 from keras.preprocessing import sequence
 from intersect_embeddings import Embeddings
 from keras.callbacks import ModelCheckpoint
