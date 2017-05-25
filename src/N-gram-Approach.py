@@ -1,12 +1,3 @@
-
-# coding: utf-8
-
-# # N-gram-Approach
-
-# ### Importing require packages
-
-# In[1]:
-
 import nltk
 from nltk.tokenize import word_tokenize
 import re
@@ -14,24 +5,11 @@ from nltk.util import ngrams
 from nltk.probability import ConditionalFreqDist, ConditionalProbDist, MLEProbDist
 import json
 
-
-# ### Loading Data
-
-# In[2]:
-
-with open("../data/squad_wiki_data.json","r") as outfile:
+with open("../data/squad_wiki_data.json", "r") as outfile:
     dataset = json.load(outfile)
-
-
-# In[3]:
 
 questions = dataset[0]['Question']
 questions = ' '.join(questions)
-
-
-# ### Generatng n_grams-bigrams
-
-# In[4]:
 
 def generate_conditional_prob_dist(training_passage, n):
     """Given a passage generates ngrams and then subsequently decrements n, where n >= 2 """
@@ -65,16 +43,10 @@ def generate_conditional_prob_dist(training_passage, n):
     return cpdist_list
 
 
-# In[5]:
-
 cp_list = generate_conditional_prob_dist(questions, 5)
 
 
-# ### Predict the next word function
-
-# In[6]:
-
-def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
+def predict_next_using_n_grams(n_grams, cpdist_list, mode = "nsent"):
     
     next_prediction = None
     residue = ""
@@ -83,7 +55,7 @@ def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
     len_n_grams = len(n_grams)
     
     # to end the recursion
-    if(len_n_grams==0): return #no prediction available
+    if(len_n_grams == 0): return #no prediction available
     
     len_cpdist = len(cpdist_list)
     
@@ -128,16 +100,7 @@ def predict_next_using_n_grams(n_grams, cpdist_list, mode="nsent"):
     return residue + " " + next_prediction
     
 
-
-# In[7]:
-
-def generate_prediction(n_grams, mode="nsent"):
+def generate_prediction(n_grams, mode = "nsent"):
     n_grams = re.sub("[^\w\']", ' ', n_grams).lower()
     n_grams = tuple(nltk.word_tokenize(n_grams))
     return predict_next_using_n_grams(n_grams, cp_list, mode)
-
-
-# In[ ]:
-
-
-

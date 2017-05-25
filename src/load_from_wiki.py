@@ -45,8 +45,8 @@ def write_to_json(data):
 
     """ Convert list of dictionary into a json file and save it into data/wiki_text.json file. """
 
-    with open('../data/wiki_data.json', 'w', encoding='utf8') as outfile:
-        data_dump = json.dumps(data, indent=4, separators=(',', ': '))
+    with open('../data/wiki_data.json', 'w', encoding = 'utf8') as outfile:
+        data_dump = json.dumps(data, indent = 4, separators = (',', ': '))
         outfile.write(data_dump)
 
 topics = ['Super Bowl 50', 'Warsaw', 'Normans', 'Nicola Tesla', 'Computational complexity theory', 'Teacher', 'Martin Luther',

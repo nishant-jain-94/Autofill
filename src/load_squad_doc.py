@@ -40,7 +40,6 @@ if not os.path.isfile('../data/squad_train_data_doc.json'):
                 outfile.write(data)
         process_squad_data("../data/train-v1.1.json", "../data/squad_train_doc.json")
 
-# Check if the dev-v1.1.json exists
 if not os.path.isfile('../data/squad_dev_data_doc.json'):
     if not os.path.isfile("../data/dev-v1.1.json"):
         print("Loading Squad Dev Data")

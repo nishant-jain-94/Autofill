@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[31]:
-
 import numpy as np
 import os
 import sys
@@ -16,17 +11,9 @@ from keras.layers import Dense, Dropout, LSTM
 from keras.callbacks import ModelCheckpoint
 from embeddings import Embeddings
 
-
-# ## Setting Parameters
-
-# PLease remove the errors, fiilup all the variables.
-
-# In[33]:
-
 model_name = 'POS_LSTM ' + loss_function + "_"+ str(custom_accuracy) + "_" + activation + "_" + str(window_size) + "_" + str(batch_size) #MODEL_NAME #POS-LSTM
 
 
-# In[12]:
 
 word_embedding_dimension = 100
 word_embedding_window_size = 4
@@ -38,16 +25,11 @@ activation = 'relu' #ACTIVATION_FUNCTION # sigmoid, relu, softmax
 custom_accuracy = 0
 loss_function = 'mse' #LOSS_FUNCTION # mse
 
-
-# In[3]:
-
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
 tokenized_pos_sentences = embeddings.get_pos_categorical_indexed_sentences()
 pos2index, index2pos = embeddings.get_pos_vocabulary()
 no_of_unique_tags = len(pos2index)
 
-
-# In[4]:
 
 seq_in = []
 seq_out = []
@@ -65,40 +47,29 @@ n_samples = len(seq_in)
 print ("Number of samples : ", n_samples)
 
 
-# In[25]:
-
 x_data = seq_in
 y_data = seq_out
 
 
-# In[24]:
-
-# Changes to the model to be done here
 model = Sequential()
-model.add(LSTM(512, input_shape=(x_data.shape[1], x_data.shape[2]), return_sequences=True))
+model.add(LSTM(512, input_shape = (x_data.shape[1], x_data.shape[2]), return_sequences = True))
 #model.add(Dropout(0.2))
 model.add(LSTM(512))
 #model.add(Dropout(0.2))
-model.add(Dense(no_of_unique_tags, activation='relu'))
-model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accuracy'])
+model.add(Dense(no_of_unique_tags, activation = 'relu'))
+model.compile(loss = 'categorical_crossentropy', optimizer = 'adam',metrics = ['accuracy'])
 model.summary()
 
-
-# In[26]:
 
 model_weights_path = "../weights/"+ model_name
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/pos_weights.{epoch:02d}-{val_acc:.2f}.hdf5'
-checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
+checkpoint = ModelCheckpoint(filepath = checkpoint_path, monitor = 'val_acc', verbose = 1, save_best_only = False, mode = 'max')
 
 
-# In[27]:
+model_fit_summary = model.fit(x_data[:100], y_data[:100], epochs = 5, batch_size = 128, verbose = 1 , validation_split = 0.25, callbacks = [checkpoint])
 
-model_fit_summary = model.fit(x_data[:100], y_data[:100], epochs=5, batch_size=128, verbose=1, validation_split=0.25, callbacks=[checkpoint])
-
-
-# In[29]:
 
 check_ori = 0
 check_pre = 0
@@ -133,8 +104,6 @@ print("Correct predictions: ",counter, '\nTotal Predictions: ',test_end - test_s
 custom_accuracy = counter/(test_end-test_start)
 
 
-# In[32]:
-
 model_results = model_fit_summary.history
 model_results.update(model_fit_summary.params)
 model_results["word_embedding_dimension"] = word_embedding_dimension
@@ -162,71 +131,3 @@ for layer in model.layers:
 text_file_path = "../weights/{0}/model_results.json".format(model_name)
 with open(text_file_path, "w") as f:
         json.dump(model_results, f)
-
-
-# In[15]:
-
-# import matplotlib.pyplot as plt
-# %matplotlib inline
-
-
-# In[16]:
-
-# pos_vocab = [v for (k,v) in index2pos.items()]
-
-
-# In[17]:
-
-# plt.figure(figsize=(16,5))
-# plt.hist(list_for_hist_index, width=1, color='r', alpha=0.5)
-# plt.hist(list_for_hist_index_ori, width=1, color='b', alpha=0.5)
-# plt.xticks(range(len(pos_vocab)),pos_vocab, rotation='vertical')
-# plt.show()
-
-
-# In[18]:
-
-# list_x = []
-# list_y = []
-# data_all = []
-# for i in range(0,1500):
-#     list_x.append((index2pos[np.argmax(x_data[i][0])], index2pos[np.argmax(x_data[i][1])]))
-#     list_y.append(index2pos[np.argmax(y_data[i])])
-#     data_all.append((str(list_x[i]),list_y[i]))
-
-
-# In[19]:
-
-# from nltk import ConditionalFreqDist as cfd
-# from nltk.collocations import *
-# import plotly.offline as plot
-# import plotly.graph_objs as go
-# plot.offline.init_notebook_mode(connected=True)
-# import pandas as pd
-
-
-# In[20]:
-
-# cfd_res = cfd(data_all)
-
-
-# In[21]:
-
-# df = pd.DataFrame(cfd_res).fillna(0)
-# mat = df.as_matrix()
-# #mat
-
-
-# In[22]:
-
-# trace = go.Heatmap(z = mat,
-#                    x=df.columns,
-#                    y=list(df.index))
-# data=[trace]
-# plot.iplot(data, filename='labelled-heatmap')
-
-
-# In[ ]:
-
-
-

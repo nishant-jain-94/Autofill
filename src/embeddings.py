@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[ ]:
-
 import re
 import os
 import numpy as np
@@ -14,14 +9,10 @@ from keras.utils import to_categorical
 from nltk.tokenize import word_tokenize,sent_tokenize
 from load_squad_wiki_data import get_squad_data, get_squad_wiki_data
 from gensim.models import Word2Vec
-nlp = spacy.load('en', parser=False, entity=False, matcher=False, add_vectors=False)
-
-
-# In[ ]:
+nlp = spacy.load('en', parser = False, entity = False, matcher = False, add_vectors = False)
 
 class Embeddings:
     def __init__(self, size, window, min_count, workers):
-        
         self.size = size
         self.window = window
         self.min_count = min_count
@@ -67,43 +58,32 @@ class Embeddings:
     def preprocessor(self, raw_text, size, window, min_count, workers):  
         tokenized_sentences = self.tokenize_sentence(raw_text)
         tokenized_pos_sentences = self.find_POS(tokenized_sentences)
-        vocab = ['PUNCT','SYM','X','ADJ','VERB','CONJ','NUM','DET','ADV','PROPN','NOUN','PART','INTJ','CCONJ','SPACE','ADP','SCONJ','AUX', 'PRON']
+        vocab = ['PUNCT', 'SYM', 'X', 'ADJ', 'VERB', 'CONJ', 'NUM', 'DET', 'ADV', 'PROPN', 'NOUN', 'PART', 'INTJ', 'CCONJ', 'SPACE', 'ADP', 'SCONJ', 'AUX', 'PRON']
         vocab = dict((word, index) for index, word in enumerate(vocab))
-        with open(self.path_pos_indexed_vocabulary,'w') as outfile:
+        with open(self.path_pos_indexed_vocabulary, 'w') as outfile:
             json.dump(vocab, outfile)
-        # initialize word2vector model
         model = Word2Vec(sentences = tokenized_sentences, size = size, window = window, min_count = min_count, workers = workers)
-        # finding out the vocabulary of raw_text with index     
         vocab = dict([(k, v.index) for k, v in model.wv.vocab.items()])
-        # Storeing the vocab2index in a seperate file
-        with open(self.path_indexed_vocabulary,'w') as outfile:
+        with open(self.path_indexed_vocabulary, 'w') as outfile:
             json.dump(vocab, outfile)
-         # finding gensim weights
         weights = model.wv.syn0
-        # storeing weights in wordembeddings.npz file
         np.save(open(self.path_word_embeddings, 'wb'), weights)
-        # dump the word2vec model in dump file word2vec_model
         with open(self.path_word2vec_model, 'wb') as output:
             pickle.dump(model, output)
 
     def get_raw_text(self, dataset):
         raw_text = ""
-        #passage_text = "" 
         question_text = ""
-        #passage_text_list = []
         question_text_list = []
         for data in dataset:
-            #passage_text_list.append(data['Paragraph'])
             for ques in data['Question']:
                 ques = "SQUADSTART " + ques + " SQUADEND"
                 question_text_list.append(ques)                
-        #passage_text = "".join(passage_text_list)
         question_dict = {}
         question_dict['Questions'] = question_text_list
-        with open("../data/squad_train_dev_question.json","w") as write:
-            json.dump(question_dict,write)
+        with open("../data/squad_train_dev_question.json", "w") as write:
+            json.dump(question_dict, write)
         question_text = " ".join(question_text_list)
-        #raw_text = passage_text + " " + question_text
         raw_text = question_text
         raw_text = raw_text.lower()
         return raw_text
@@ -125,15 +105,11 @@ class Embeddings:
             raw_text = self.get_raw_text(squad_data) 
             self.create_tokenized_squad_corpus(raw_text)
             self.create_pos_tokenized_squad_corpus(raw_text)
-        
-        
-
-    # Will load and return weights from the existing embedding.npz file
+         
     def get_weights(self):
         weights = np.load(open(self.path_word_embeddings,'rb'))
         return weights
 
-    # Returns word2Index and index2word
     def get_vocabulary(self):
         with open(self.path_indexed_vocabulary, 'r') as f:
             data = json.load(f)
@@ -141,19 +117,16 @@ class Embeddings:
         idx2word = dict([(v, k) for k, v in data.items()])
         return word2idx, idx2word
 
-    # Returns the pickled model
     def get_model(self):
-        with open(self.path_word2vec_model,'rb') as output:
+        with open(self.path_word2vec_model, 'rb') as output:
             model = pickle.load(output)
         return model
 
-    # Returns the tokenized sentences
     def get_tokenized_indexed_sentences(self):
         with open(self.path_indexed_sentences, 'r') as f:
             tokenized_sentences = json.load(f)
         return tokenized_sentences
     
-    # Returns pos2Index and index2pos
     def get_pos_vocabulary(self):
         with open(self.path_pos_indexed_vocabulary, 'r') as f:
             data = json.load(f)
@@ -161,7 +134,6 @@ class Embeddings:
         idx2pos = dict([(v, k) for k, v in data.items()])
         return pos2idx, idx2pos
     
-    # Returns the tokenized pos sentences
     def get_pos_categorical_indexed_sentences(self):
         with open(self.path_pos_categorical_indexed_sentences, 'r') as f:
             tokenized_pos_sentences = json.load(f)
@@ -182,7 +154,6 @@ class Embeddings:
             json.dump(categorical_pos_sentences, f)
             
     def load_google_word2vec_model(self):
-        #google_word2vec_model = gensim.models.KeyedVectors.load_word2vec_format('../model/GoogleNews-vectors-negative300.bin',binary = True, encoding = 'utf8')
         print("LOADING TRAINED SQUAD AND WIKI WORD2VEC MODEL.....")
         wiki_word2vec_model = self.get_model()
         print("INTERSECTING GOOGLES WORD2VEC MODEL WITH WORD2VEC MODEL")
