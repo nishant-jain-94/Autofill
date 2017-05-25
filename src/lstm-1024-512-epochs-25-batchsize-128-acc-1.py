@@ -1,18 +1,9 @@
-
-# coding: utf-8
-
-# ### importing require packages
-
-# In[ ]:
-
 from __future__ import print_function
-
 import json
 import os
 import numpy as np
 import sys
 import h5py
-
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 from keras.engine import Input
@@ -25,64 +16,33 @@ from keras.layers import LSTM
 from keras.preprocessing import sequence
 from intersect_embeddings import Embeddings
 from keras.callbacks import ModelCheckpoint
-
 from nltk.tokenize import word_tokenize
 import random
 
-
-# ## Setting Parameters
-
-# In[ ]:
-
-#model_name = LAYER_NAME-NO.OF_LAYERS-L1SIZE-L2SIZE-EPOCHS-NO.OF.EPOCHS-BATCH_SIZE_N #MODEL_NAME 
-
-
-# In[ ]:
-
 model_name = "lstm-1024-512-epochs-25-batchsize-128-acc-1"
-
-
-# In[ ]:
 
 word_embedding_dimension = 300
 word_embedding_window_size = 4
-batch_size = 256 # 32, 64, 128
-epochs = 15 # 10, 15, 30
-window_size = 5 # 3, 4, 5
+batch_size = 256
+epochs = 15
+window_size = 5 
 accuracy_threshold = 1
-activation = 'relu' # sigmoid, relu, softmax
+activation = 'relu'
 custom_accuracy = 0
-loss_function = 'mse' # mse
+loss_function = 'mse'
 
-
-# ## Instantiate Embeddings 
-
-# In[ ]:
-
+# ## Instantiate Embeddings
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
 
-
 # ### getting data from preprocessing
-
-# In[ ]:
-
 word2vec_model = embeddings.get_intersected_model()
 word2vec_weights = word2vec_model.wv.syn0
 word2index, index2word = embeddings.get_vocabulary()
 tokenized_indexed_sentences = embeddings.get_indexed_sentences()
 
-
 # ### generating training data
-
-# In[ ]:
-
 vocab_size = len(word2index)
 print(vocab_size)
-#sorted(window_size,reverse=True)
-#sentence_max_length = max([len(sentence) for sentence in tokenized_indexed_sentence ])
-
-
-# In[ ]:
 
 seq_in = []
 seq_out = []
@@ -100,43 +60,30 @@ seq_out = np.array(seq_out)
 n_samples = len(seq_in)
 print ("Number of samples : ", n_samples)
 
-
 # ## Defining model
-
-# In[ ]:
-
 # Changes to the model to be done here
 model = Sequential()
-model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_weights.shape[1], weights=[word2vec_weights]))
-model.add(LSTM(512, return_sequences=True))
+model.add(Embedding(input_dim = word2vec_weights.shape[0], output_dim = word2vec_weights.shape[1], weights = [word2vec_weights]))
+model.add(LSTM(512, return_sequences = True))
 model.add(Dropout(0.2))
 model.add(LSTM(512))
 model.add(Dropout(0.2))
-model.add(Dense(word2vec_weights.shape[1], activation=activation))
-model.compile(loss=loss_function, optimizer='adam',metrics=['accuracy'])
+model.add(Dense(word2vec_weights.shape[1], activation = activation))
+model.compile(loss = loss_function, optimizer = 'adam',metrics = ['accuracy'])
 model.summary()
-
-
-# In[ ]:
 
 model_weights_path = "../weights/"+model_name
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
 checkpoint_path = model_weights_path + '/weights.{epoch:02d}-{val_acc:.2f}.hdf5'
-checkpoint = ModelCheckpoint(filepath=checkpoint_path, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
+checkpoint = ModelCheckpoint(filepath = checkpoint_path, monitor = 'val_acc', verbose = 1, save_best_only = False, mode = 'max')
 
 
 # ## Train Model
-
-# In[ ]:
-
-model_fit_summary = model.fit(seq_in, seq_out, epochs=epochs, verbose=1, validation_split=0.2, batch_size=batch_size, callbacks=[checkpoint])
+model_fit_summary = model.fit(seq_in, seq_out, epochs = epochs, verbose = 1, validation_split = 0.2, batch_size = batch_size, callbacks = [checkpoint])
 
 
 # ### model predict
-
-# In[ ]:
-
 start = 100
 pattern = list(seq_in[start])
 print("\"",' '.join(index2word[index] for index in pattern))
@@ -149,14 +96,11 @@ for i in range(10):
 
 
 # ## Accuracy
-
-# In[ ]:
-
 def accuracy():
     count = 0
     correct = 0
     for sub_sample_in, sub_sample_out in zip(seq_in, seq_out):
-        ypred = model.predict_on_batch(np.expand_dims(sub_sample_in, axis=0))[0]
+        ypred = model.predict_on_batch(np.expand_dims(sub_sample_in, axis = 0))[0]
         ytrue = sub_sample_out
         pred_word = word2vec_model.similar_by_vector(ypred)[0][0]
         true_word = word2vec_model.similar_by_vector(ytrue)[0][0]
@@ -166,25 +110,11 @@ def accuracy():
         count += 1
     print("Accuracy {0}".format(correct/count))
 
-
-# In[ ]:
-
-# n = no. of predictions
 custom_accuracy = accuracy()
 print (custom_accuracy)
 
-
-# In[ ]:
-
 x = model.layers[1]
-
-
-# In[ ]:
-
 x.get_config()
-
-
-# In[ ]:
 
 model_results = model_fit_summary.history
 model_results.update(model_fit_summary.params)
@@ -213,14 +143,4 @@ for layer in model.layers:
 text_file_path = "../weights/{0}/model_results.json".format(model_name)
 with open(text_file_path, "w") as f:
         json.dump(model_results, f)
-
-
-# In[ ]:
-
 model_results
-
-
-# In[ ]:
-
-
-
