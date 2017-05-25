@@ -1,18 +1,9 @@
-
-# coding: utf-8
-
-# ### importing require packages
-
-# In[19]:
-
 from __future__ import print_function
-
 import json
 import os
 import numpy as np
 import sys
 import h5py
-
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 from keras.engine import Input
@@ -25,54 +16,28 @@ from keras.layers import LSTM
 from keras.preprocessing import sequence
 from embeddings import Embeddings
 from keras.callbacks import ModelCheckpoint
-
 from nltk.tokenize import word_tokenize
 import random
-
-
-# In[20]:
-
-np.mean([1, 2, 3])
-
-
-# ## Instantiate Embeddings 
-
-# In[21]:
 
 embeddings = Embeddings(100, 4, 1, 4)
 
 
-# ### getting data from preprocessing
-
-# In[22]:
-
+# getting data from preprocessing
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
 word2vec_model = embeddings.get_model()
 tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 
-# ### generating training data
-
-# In[23]:
-
-window_size = 5
+# generating training data
+indow_size = 5
 vocab_size = len(word2index)
 print(vocab_size)
-#sorted(window_size,reverse=True)
-#sentence_max_length = max([len(sentence) for sentence in tokenized_indexed_sentence ])
 
-
-# ## Defining model
-
-# In[24]:
 
 model_weights_path = "../weights/LSTM-2-512-Window-5-Batch-128-Epoch-10-Stateful"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
-
-
-# In[25]:
 
 seq_in = []
 seq_out = []
@@ -81,10 +46,10 @@ seq_out = []
 for sentence in tokenized_indexed_sentences:
     sentence_seq_in = []
     sentence_seq_out = []
-    for i in range(len(sentence)-window_size-1):
-        x = sentence[i:i + window_size]
+    for i in range(len(sentence) - window_size - 1):
+        x = sentence[i : i + window_size]
         y = sentence[i + window_size]
-        sentence_seq_in.append(x)#[]
+        sentence_seq_in.append(x)
         sentence_seq_out.append(word2vec_weights[y])
     seq_in.append(sentence_seq_in)
     seq_out.append(sentence_seq_out)
@@ -96,31 +61,17 @@ n_samples = len(seq_in)
 print ("Number of samples : ", n_samples)
 
 
-# In[26]:
-
 subsamples = np.array([len(seq) for seq in seq_in])
 print(np.sum(subsamples))
-
-
-# In[27]:
 
 subsamples_in = np.array([s for seq in seq_in for s in seq])
 subsamples_out = np.array([s for seq in seq_out for s in seq])
 
 
-# ## Train Model
-
-# In[28]:
-
 np.expand_dims(seq_in[0][0], axis=1)
 
 
-# In[29]:
-
 total_batches = int(subsamples_in.shape[0] / 256)
-
-
-# In[30]:
 
 batch_len = []
 for i in range(total_batches):
@@ -128,30 +79,25 @@ for i in range(total_batches):
 min_batch_len = min(batch_len)
 
 
-# In[31]:
-
 # Changes to the model to be done here
 model = Sequential()
-model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_weights.shape[1], weights=[word2vec_weights], batch_input_shape=(min_batch_len, 5)))
-model.add(LSTM(512, return_sequences=True, stateful=True))
+model.add(Embedding(input_dim = word2vec_weights.shape[0], output_dim = word2vec_weights.shape[1], weights = [word2vec_weights], batch_input_shape = (min_batch_len, 5)))
+model.add(LSTM(512, return_sequences = True, stateful = True))
 model.add(Dropout(0.2))
-model.add(LSTM(512, stateful=True))
+model.add(LSTM(512, stateful = True))
 model.add(Dropout(0.1))
-model.add(Dense(word2vec_weights.shape[1], activation='sigmoid'))
-model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
+model.add(Dense(word2vec_weights.shape[1], activation = 'sigmoid'))
+model.compile(loss = 'mse', optimizer = 'adam',metrics = ['accuracy'])
 model.summary()
 
 
-# In[33]:
-
 print("Train")
 for epoch in range(15):
-    print("Epoch {0}/{1}".format(epoch+1, 15))
+    print("Epoch {0}/{1}".format(epoch + 1, 15))
     mean_tr_accuracy = []
     mean_tr_loss = []
     for i in range(total_batches):
-        # print("Done with {0}/{1} batches".format(i, total_batches))
-        train_accuracy, train_loss = model.train_on_batch(subsamples_in[i::total_batches][:min_batch_len], subsamples_out[i::total_batches][:min_batch_len])
+        train_accuracy, train_loss = model.train_on_batch(subsamples_in[i::total_batches][ : min_batch_len], subsamples_out[i::total_batches][:min_batch_len])
         mean_tr_accuracy.append(train_accuracy)
         mean_tr_loss.append(train_loss)
         model.reset_states()
@@ -163,10 +109,7 @@ for epoch in range(15):
     model.save_weights(filepath)
 
 
-# ### model predict
-
-# In[73]:
-
+# model predict
 start = 20
 samples = subsamples_in[start::total_batches][:min_batch_len]
 predictions = model.predict_on_batch(samples)
@@ -176,10 +119,7 @@ for index, prediction in enumerate(predictions):
     sys.stdout.write("*"+pred_word+" \n")
 
 
-# ## Accuracy
-
-# In[74]:
-
+# Accuracy
 def accuracy():
     start = 27
     count = 0
@@ -197,14 +137,5 @@ def accuracy():
     print('accuracy = ', float(accur))
     
 
-
-# In[75]:
-
 # n = no. of predictions
 print(accuracy())
-
-
-# In[ ]:
-
-
-

@@ -4,26 +4,26 @@ import sys
 import h5py
 import datetime
 import json
-
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
 from keras.callbacks import ModelCheckpoint
 from embeddings import Embeddings
 
-model_name = 'POS_LSTM ' + loss_function + "_"+ str(custom_accuracy) + "_" + activation + "_" + str(window_size) + "_" + str(batch_size) #MODEL_NAME #POS-LSTM
+model_name = 'POS_LSTM ' + loss_function + "_"+ str(custom_accuracy) + "_" + activation + "_" + str(window_size) + "_" + str(batch_size) 
 
 
 
 word_embedding_dimension = 100
 word_embedding_window_size = 4
-batch_size = 128 #BATCH_SIZE # 32, 64, 128
-epochs = 10 #EPOCH_SIZE # 10, 15, 30
-window_size = 3 #WINDOW_SIZE # 3, 4, 5
+batch_size = 128 
+epochs = 10 
+window_size = 3
 accuracy_threshold = 0.85
-activation = 'relu' #ACTIVATION_FUNCTION # sigmoid, relu, softmax
+activation = 'relu'
 custom_accuracy = 0
-loss_function = 'mse' #LOSS_FUNCTION # mse
+loss_function = 'mse' 
+
 
 embeddings = Embeddings(word_embedding_dimension, word_embedding_window_size, 1, 4)
 tokenized_pos_sentences = embeddings.get_pos_categorical_indexed_sentences()
@@ -35,8 +35,8 @@ seq_in = []
 seq_out = []
 # generating dataset
 for sentence in tokenized_pos_sentences:
-    for i in range(len(sentence)-window_size-1):
-        x = sentence[i:i + window_size]
+    for i in range(len(sentence) - window_size - 1):
+        x = sentence[i : i + window_size]
         y = sentence[i + window_size]
         seq_in.append(x)
         seq_out.append(y)
@@ -53,11 +53,9 @@ y_data = seq_out
 
 model = Sequential()
 model.add(LSTM(512, input_shape = (x_data.shape[1], x_data.shape[2]), return_sequences = True))
-#model.add(Dropout(0.2))
 model.add(LSTM(512))
-#model.add(Dropout(0.2))
 model.add(Dense(no_of_unique_tags, activation = 'relu'))
-model.compile(loss = 'categorical_crossentropy', optimizer = 'adam',metrics = ['accuracy'])
+model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['accuracy'])
 model.summary()
 
 
@@ -82,28 +80,20 @@ list_for_hist_words_ori = []
 list_for_hist_index_ori = []
 for i in range(test_start, test_end):
     test_no = i
-    to_predict = x_data[test_no:test_no+1]
+    to_predict = x_data[test_no : test_no + 1]
     y_ans = model.predict(to_predict)
     
     for word, corr_int in pos2index.items():
         if corr_int == np.argmax(y_ans):
-            #print ("pridicted: ",word, corr_int)
             check_pre = corr_int
             list_for_hist_words.append(word)
             list_for_hist_index.append(corr_int)
         if corr_int == np.argmax(y_data[test_no:test_no+1]):
-            #print ("original: ",word, corr_int)
             check_ori = corr_int
             list_for_hist_words_ori.append(word)
             list_for_hist_index_ori.append(corr_int)
     if check_ori == check_pre :
         counter += 1
-    #print('\n')
-
-print("Correct predictions: ",counter, '\nTotal Predictions: ',test_end - test_start)
-custom_accuracy = counter/(test_end-test_start)
-
-
 model_results = model_fit_summary.history
 model_results.update(model_fit_summary.params)
 model_results["word_embedding_dimension"] = word_embedding_dimension
