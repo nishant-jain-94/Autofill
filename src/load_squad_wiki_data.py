@@ -1,15 +1,7 @@
-
-# coding: utf-8
-
-# In[1]:
-
 import os
 import json
 import requests
 from load_from_wiki import load_data
-
-
-# In[2]:
 
 def processing_squad_data(dataset):
     raw_data = []
@@ -25,9 +17,6 @@ def processing_squad_data(dataset):
             raw_data.append(para_ques_dict)
     return raw_data
 
-
-# In[3]:
-
 def combine_squad_dev_train():    
     with open('../data/dev-v1.1.json') as data_file:
         dataset = json.load(data_file)
@@ -38,10 +27,7 @@ def combine_squad_dev_train():
     dev_set.extend(train_set)
     with open('../data/squad_data.json', 'w') as outfile:
         json.dump(dev_set , outfile)    
-
-
-# In[1]:
-
+            
 def combine_squad_data():
     """Merges two files squad_data and wiki_data and generates an merged file squad_wiki_data.json  """
     with open('../data/dev-v1.1.json') as data_file:
@@ -63,11 +49,8 @@ def combine_squad_data():
     final_dict['Question'] = final_question
     final_data = []
     final_data.append(final_dict)
-    with open('../data/combined_squad_data.json','w') as outfile:
+    with open('../data/combined_squad_data.json', 'w') as outfile:
         json.dump(final_data , outfile)
-
-
-# In[4]:
 
 def merge_file():
     """Merges two files squad_data and wiki_data and generates an merged file squad_wiki_data.json  """
@@ -88,11 +71,8 @@ def merge_file():
     final_dict['Question'] = final_question
     final_data = []
     final_data.append(final_dict)
-    with open('../data/squad_wiki_data.json','w') as outfile:
+    with open('../data/squad_wiki_data.json', 'w') as outfile:
         json.dump(final_data , outfile)
-
-
-# In[5]:
 
 def load_squad_wiki_data():
     if not os.path.isfile("../data/squad_wiki_data.json"):
@@ -121,11 +101,7 @@ def load_squad_wiki_data():
         if not os.path.isfile("../data/wiki_data.json"):
             print("Loading Wiki Data")
             load_data()
-
         merge_file()  
-
-
-# In[2]:
 
 def get_squad_wiki_data():
     print("Loading Squad Data")
@@ -134,33 +110,10 @@ def get_squad_wiki_data():
         squad_wiki_data = json.load(dataset)
     return squad_wiki_data
 
-
-# In[3]:
-
 def get_squad_data():
     print("Combining Squad Data")
     combine_squad_data()
     with open("../data/combined_squad_data.json", "r") as dataset:
         squad_data = json.load(dataset)
     return squad_data
-
-
-# In[7]:
-
-# data = get_squad_wiki_data()
-
-
-# In[8]:
-
-# type(data[0]["Question"])
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
 

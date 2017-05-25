@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
 import re
 import os
 import numpy as np
@@ -11,15 +6,12 @@ import pickle
 import datetime
 import spacy
 from keras.utils import to_categorical
-from nltk.tokenize import word_tokenize,sent_tokenize
+from nltk.tokenize import word_tokenize, sent_tokenize
 from load_squad_wiki_data import get_squad_data, get_squad_wiki_data
 from gensim.models import Word2Vec
 from spacy.en import English
-nlp = spacy.load('en', parser=False, matcher=False, add_vectors=False)
+nlp = spacy.load('en', parser = False, matcher = False, add_vectors = False)
 nlp_en = English()
-
-
-# In[2]:
 
 class MakeIter(object):
     def __init__(self, generator_func, **kwargs):
@@ -30,7 +22,6 @@ class MakeIter(object):
     
 class Embeddings:
     def __init__(self, size, window, min_count, workers):
-        
         self.size = size
         self.window = window
         self.min_count = min_count
@@ -52,10 +43,9 @@ class Embeddings:
         with open(self.path_word_tokenized_sentence, "w") as outfile:
             json.dump(tokenized_sentences, outfile)
         
-
     def create_embeddings(self):
         sentences = self.get_tokenized_sentences()
-        word2vec_model = Word2Vec(sentences, size=self.size, window=self.window, min_count=self.min_count, workers=self.workers)
+        word2vec_model = Word2Vec(sentences, size = self.size, window = self.window, min_count = self.min_count, workers = self.workers)
         word2index = dict([(k, v.index) for k, v in word2vec_model.wv.vocab.items()])
         with open(self.path_vocabulary, "w") as output:
             json.dump(word2index, output)
@@ -67,8 +57,7 @@ class Embeddings:
         intersected_model = self.load_google_word2vec_model(word2vec_model) 
         with open(self.path_google_intersected, "wb") as output:
             pickle.dump(intersected_model, output)
-            
-        
+                    
     def index_sentences(self):
         if not os.path.isfile(self.path_indexed_sentences):
             tokenized_sentences = self.get_tokenized_sentences()
@@ -91,7 +80,6 @@ class Embeddings:
         dataset = get_squad_wiki_data()
         return self.get_raw_text(dataset)
 
-    # Returns word2Index and index2word
     def get_vocabulary(self):
         with open(self.path_vocabulary, 'r') as f:
             data = json.load(f)
@@ -99,13 +87,12 @@ class Embeddings:
         idx2word = dict([(v, k) for k, v in data.items()])
         return word2idx, idx2word
 
-    # Returns the pickled model
     def get_model(self):
         if not os.path.isfile(self.path_word2vec_model):
             print("Creating Embeddings...")
             self.create_embeddings()
         print("Loading Embeddings...")
-        with open(self.path_word2vec_model,'rb') as output:
+        with open(self.path_word2vec_model, 'rb') as output:
             model = pickle.load(output)
         return model
     
@@ -152,39 +139,3 @@ class Embeddings:
         word2index, index2word = self.get_vocabulary()
         indexed_query = [word2index[word] for word in word_tokenized_query if word in word2index.keys()]
         return indexed_query
-        
-
-
-# In[3]:
-
-#e = Embeddings(300, 4, 1, 4)
-
-
-# In[ ]:
-
-# def preprocessor(self, raw_text, size, window, min_count, workers):  
-# #         tokenized_sentences = self.tokenize_sentence(raw_text)
-#         print("STOREING RAW TEXT AFTER REGEX AND WORD TOKENIZATION ")
-#         with open("../data/tokenized_sentences_after_regex.json","w") as outfile:
-#             json.dump(tokenized_sentences,outfile)
-        
-#         tokenized_pos_sentences = self.find_POS(tokenized_sentences)
-#         vocab = ['PUNCT','SYM','X','ADJ','VERB','CONJ','NUM','DET','ADV','PROPN','NOUN','PART','INTJ','CCONJ','SPACE','ADP','SCONJ','AUX', 'PRON']
-#         vocab = dict((word, index) for index, word in enumerate(vocab))
-#         with open(self.path_pos_indexed_vocabulary,'w') as outfile:
-#             json.dump(vocab, outfile)
-#         # initialize word2vector model
-#         model = Word2Vec(sentences = tokenized_sentences, size = size, window = window, min_count = min_count, workers = workers)
-#         intersected_model = self.load_google_word2vec_model(model)
-#         # finding out the vocabulary of raw_text with index     
-#         vocab = dict([(k, v.index) for k, v in intersected_model.wv.vocab.items()])
-#         # Storeing the vocab2index in a seperate file
-#         with open(self.path_indexed_vocabulary,'w') as outfile:
-#             json.dump(vocab, outfile)
-#          # finding gensim weights
-#         weights = intersected_model.wv.syn0
-#         # storeing weights in wordembeddings.npz file
-#         np.save(open(self.path_word_embeddings, 'wb'), weights)
-#         # dump the word2vec model in dump file word2vec_model
-    
-
