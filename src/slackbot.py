@@ -3,13 +3,14 @@ import time
 import json
 from slackclient import SlackClient
 from ngrams import generate_prediction
+from lstm_model import predict_next
 
 with open('slackbot.config.json') as config:
     slackbot_config = json.load(config)
 # AT_BOT = "<@" + BOT_ID + ">"
 BOT_ID = slackbot_config["bot_id"]
 AT_BOT = "<@" + BOT_ID + ">"
-COMMAND = "compute"
+COMMAND = "@lstm"
 
 # instantiate Slack & Twilio clients
 slack_client = SlackClient(slackbot_config["api_token"])
@@ -21,8 +22,11 @@ def handle_command(command, channel):
     If not returns what is needed for clarification
     """
     response = "Not sure what you mean. Use the *" + COMMAND
-    # if command.startswith(COMMAND):
-    response = generate_prediction(command)
+    if command.startswith(COMMAND):
+        response = predict_next(command,2)
+    else:
+        response = generate_prediction(command)
+
     slack_client.api_call("chat.postMessage", channel = channel,
                           text=response, as_user = True)
 

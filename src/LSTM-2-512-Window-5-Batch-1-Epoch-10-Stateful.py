@@ -1,18 +1,9 @@
-
-# coding: utf-8
-
-# ### importing require packages
-
-# In[ ]:
-
 from __future__ import print_function
-
 import json
 import os
 import numpy as np
 import sys
 import h5py
-
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 from keras.engine import Input
@@ -25,22 +16,14 @@ from keras.layers import LSTM
 from keras.preprocessing import sequence
 from embeddings import Embeddings
 from keras.callbacks import ModelCheckpoint
-
 from nltk.tokenize import word_tokenize
 import random
 
-
 # ## Instantiate Embeddings 
-
-# In[ ]:
-
 embeddings = Embeddings(100, 4, 1, 4)
 
 
 # ### getting data from preprocessing
-
-# In[ ]:
-
 word2vec_weights = embeddings.get_weights()
 word2index, index2word = embeddings.get_vocabulary()
 word2vec_model = embeddings.get_model()
@@ -48,9 +31,6 @@ tokenized_indexed_sentences = embeddings.get_tokenized_indexed_sentences()
 
 
 # ### generating training data
-
-# In[ ]:
-
 window_size = 5
 vocab_size = len(word2index)
 print(vocab_size)
@@ -59,29 +39,20 @@ print(vocab_size)
 
 
 # ## Defining model
-
-# In[ ]:
-
-# Changes to the model to be done here
 model = Sequential()
-model.add(Embedding(input_dim=word2vec_weights.shape[0], output_dim=word2vec_weights.shape[1], weights=[word2vec_weights], batch_input_shape=(1, 5)))
-model.add(LSTM(512, return_sequences=True, stateful=True))
+model.add(Embedding(input_dim = word2vec_weights.shape[0], output_dim = word2vec_weights.shape[1], weights = [word2vec_weights], batch_input_shape = (1, 5)))
+model.add(LSTM(512, return_sequences = True, stateful = True))
 model.add(Dropout(0.2))
 model.add(LSTM(512))
 model.add(Dropout(0.1))
-model.add(Dense(word2vec_weights.shape[1], activation='sigmoid'))
-model.compile(loss='mse', optimizer='adam',metrics=['accuracy'])
+model.add(Dense(word2vec_weights.shape[1], activation = 'sigmoid'))
+model.compile(loss = 'mse', optimizer = 'adam',metrics = ['accuracy'])
 model.summary()
 
-
-# In[ ]:
 
 model_weights_path = "../weights/LSTM-2-512-Window-5-Batch-1-Epoch-10-Stateful"
 if not os.path.exists(model_weights_path):
     os.makedirs(model_weights_path)
-
-
-# In[ ]:
 
 seq_in = []
 seq_out = []
@@ -104,20 +75,11 @@ seq_out = np.array(seq_out)
 n_samples = len(seq_in)
 print ("Number of samples : ", n_samples)
 
-
-# In[ ]:
-
 seq_in.shape
 
 
 # ## Train Model
-
-# In[ ]:
-
 np.expand_dims(seq_in[0][0], axis=1)
-
-
-# In[ ]:
 
 print("Train")
 for epoch in range(15):
@@ -128,7 +90,7 @@ for epoch in range(15):
         if i % 100 == 0:
             print("Done with {0}/{1}".format(i, len(seq_in)))
         for j in range(len(seq_in[i])):
-            train_accuracy, train_loss = model.train_on_batch(np.expand_dims(seq_in[i][j], axis=0), np.expand_dims(seq_out[i][j], axis=0))
+            train_accuracy, train_loss = model.train_on_batch(np.expand_dims(seq_in[i][j], axis = 0), np.expand_dims(seq_out[i][j], axis = 0))
             mean_tr_accuracy.append(train_accuracy)
             mean_tr_loss.append(train_loss)
         model.reset_states()
@@ -141,9 +103,6 @@ for epoch in range(15):
 
 
 # ### model predict
-
-# In[ ]:
-
 start = 97
 pattern = list(seq_in[start])
 print("\"",' '.join(index2word[index] for index in pattern))
@@ -156,12 +115,9 @@ for i in range(10):
 
 
 # ## Accuracy
-
-# In[ ]:
-
 def accuracy(no_of_preds):
-    correct=0
-    wrong=0
+    correct = 0
+    wrong = 0
     random.seed(1)
     for i in random.sample(range(0, seq_in.shape[0]), no_of_preds):
         start = i
@@ -177,21 +133,5 @@ def accuracy(no_of_preds):
     print('correct: '+str(correct)+(' wrong: ')+str(wrong))
     accur = float(correct/(correct+wrong))
     print('accuracy = ',float(accur))
-    
 
-
-# In[ ]:
-
-# n = no. of predictions
 print(accuracy(90000))
-
-
-# In[2]:
-
-
-
-
-# In[ ]:
-
-
-
