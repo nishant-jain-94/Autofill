@@ -47,10 +47,10 @@ A model to suggest the next word(s) within a **closed domain** from a given set 
 
  3. **Training a Neutral Model**:
 
+ ***./data/Model_Template.py***
 
-
-
-
+ We will develop a **LSTM** network to learn sequences of words and will use this model to generate new sequences of words. We already have prepared our training data we need to transform it so that it is suitable for use with Keras. We are ready to define our LSTM model. Here we need to define a input layer and few hidden LSTM layer with different number of memory units. The network also uses dropout layers with some probability. The output layer can be a Dense layer or LSTM layer using any activation function. The output will also be a vector.
+ Now fit this model over the data.
 
 
 ****
@@ -58,7 +58,3 @@ A model to suggest the next word(s) within a **closed domain** from a given set 
 ### /data
 
   This folder contain files to read data from SQuAD dataset and  wikipedia.
-
-  SQuAD Data consists of several passages and 100,000+ questions and answers on sets of 500+ Wikipedia articles.
-
-  Wikipedia Data Complete wikipedia articles on SQuAD topics- 500+
